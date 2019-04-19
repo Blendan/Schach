@@ -1,8 +1,10 @@
 package schach.figures;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.*;
 import schach.Controller;
 import schach.PlayingField;
 
@@ -11,15 +13,16 @@ public abstract class Figure extends Button
 	private int x, y;
 	private String type = "";
 	private int value = 0;
-	private boolean isReachable = false, isWhite, isMoved = false; //isWhite because isBlack would be racist
+	private boolean isReachable = false, isWhite, isMoved = false, isKing = false; //isWhite because isBlack would be racist
+	private Text text = new Text();
 
 	public Figure()
 	{
-	}
-
-	public Figure(boolean isWhite)
-	{
-		this.isWhite = isWhite;
+		setTextAlignment(TextAlignment.CENTER);
+		setAlignment(Pos.CENTER);
+		this.setGraphic(text);
+		text.setTextAlignment(TextAlignment.CENTER);
+		text.setFont(Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 30));
 	}
 
 	public String getType()
@@ -38,12 +41,13 @@ public abstract class Figure extends Button
 		this.y = y;
 	}
 
-	public void setType(String type)
+	void setType(String type)
 	{
 		this.type = type;
+		text.setText(type.substring(0,1));
 	}
 
-	public void setValue(int value)
+	void setValue(int value)
 	{
 		this.value = value;
 	}
@@ -53,12 +57,25 @@ public abstract class Figure extends Button
 		return isWhite;
 	}
 
-	public void setWhite(boolean white)
+	void setWhite(boolean white)
 	{
 		isWhite = white;
+
+		if(white)
+		{
+			text.setFill(Color.WHITE);
+			text.setStroke(Color.BLACK);
+			text.setStrokeWidth(2);
+		}
+		else
+		{
+			text.setStroke(Color.WHITE);
+			text.setStrokeWidth(2);
+			text.setFill(Color.BLACK);
+		}
 	}
 
-	public boolean isMoved()
+	boolean isMoved()
 	{
 		return isMoved;
 	}
@@ -97,5 +114,15 @@ public abstract class Figure extends Button
 	public boolean isReachable()
 	{
 		return isReachable;
+	}
+
+	public boolean isKing()
+	{
+		return isKing;
+	}
+
+	public void setKing(boolean king)
+	{
+		isKing = king;
 	}
 }

@@ -6,10 +6,10 @@ public class King extends Figure
 {
 	public King(boolean isWhite)
 	{
-		this.setWhite(isWhite);
+		super();
 		setValue(999999);
 		setType("King");
-		setText(getType());
+		this.setWhite(isWhite);
 	}
 
 	@Override

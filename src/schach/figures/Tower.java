@@ -7,10 +7,10 @@ public class Tower extends Figure
 
 	public Tower(boolean isWhite)
 	{
-		this.setWhite(isWhite);
+		super();
 		setValue(5);
 		setType("Tower");
-		setText(getType());
+		this.setWhite(isWhite);
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import schach.figures.Empty;
 import schach.figures.Figure;
-import schach.figures.King;
 
 import java.util.ArrayList;
 
@@ -18,17 +17,6 @@ public class PlayingField
 	private ArrayList<Figure> figures = new ArrayList<>();
 	private Figure active = null;
 	private boolean isWhiteNow = true;
-	private King kingWhite, kingBlack;
-
-	void setKingWhite(King kingWhite)
-	{
-		this.kingWhite = kingWhite;
-	}
-
-	void setKingBlack(King kingBlack)
-	{
-		this.kingBlack = kingBlack;
-	}
 
 	PlayingField(GridPane gridPaneMain, Controller controller)
 	{
@@ -96,13 +84,16 @@ public class PlayingField
 		figures.remove(figure);
 		Platform.runLater(() -> gridPaneMain.getChildren().remove(figure));
 
-		if (figure.equals(kingBlack))
+		if(figure.getType().equals("King"))
 		{
-			controller.end(true);
-		}
-		else if (figure.equals(kingWhite))
-		{
-			controller.end(false);
+			if (figure.isWhite())
+			{
+				controller.end(false);
+			}
+			else
+			{
+				controller.end(true);
+			}
 		}
 	}
 

@@ -6,10 +6,10 @@ public class Runner extends Figure
 {
 	public Runner(boolean isWhite)
 	{
-		this.setWhite(isWhite);
+		super();
 		setValue(3);
 		setType("Runner");
-		setText(getType());
+		this.setWhite(isWhite);
 	}
 
 	@Override

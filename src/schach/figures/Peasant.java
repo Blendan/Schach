@@ -6,10 +6,10 @@ public class Peasant extends Figure
 {
 	public Peasant(boolean isWhite)
 	{
-		this.setWhite(isWhite);
+		super();
 		setValue(1);
 		setType("Peasant");
-		setText(getType());
+		this.setWhite(isWhite);
 	}
 
 

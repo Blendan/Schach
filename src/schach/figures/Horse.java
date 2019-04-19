@@ -6,11 +6,13 @@ public class Horse extends Figure
 {
 	public Horse(boolean isWhite)
 	{
-		this.setWhite(isWhite);
+		super();
 		setValue(3);
 		setType("Horse");
-		setText(getType());
+		this.setWhite(isWhite);
 	}
+
+
 
 	@Override
 	public void setReachableFields(PlayingField playingField)

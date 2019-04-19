@@ -6,10 +6,10 @@ public class Queen extends Figure
 {
 	public Queen(boolean isWhite)
 	{
-		this.setWhite(isWhite);
+		super();
 		setValue(9);
 		setType("Queen");
-		setText(getType());
+		this.setWhite(isWhite);
 	}
 
 	@Override
