@@ -5,16 +5,16 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
-import schach.Controller;
-import schach.PlayingField;
+import schach.FigureList;
 
 public abstract class Figure extends Button
 {
 	private int x, y;
 	private String type = "";
 	private int value = 0;
-	private boolean isReachable = false, isWhite, isMoved = false, isKing = false; //isWhite because isBlack would be racist
+	private boolean isReachable = false, isWhite, isMoved = false; //isWhite because isBlack would be racist
 	private Text text = new Text();
+	private Figure original;
 
 	public Figure()
 	{
@@ -23,6 +23,40 @@ public abstract class Figure extends Button
 		this.setGraphic(text);
 		text.setTextAlignment(TextAlignment.CENTER);
 		text.setFont(Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 30));
+	}
+
+	public Figure(Figure figure)
+	{
+		this.original = figure;
+		this.x = figure.getX();
+		this.y = figure.getY();
+		this.value = figure.getValue();
+		this.isReachable = figure.isReachable();
+		this.isWhite = figure.isWhite();
+		this.isMoved = figure.isMoved();
+
+		setType(figure.getType());
+		if(!type.equals(""))
+		{
+			setTextAlignment(TextAlignment.CENTER);
+			setAlignment(Pos.CENTER);
+			this.setGraphic(text);
+			text.setTextAlignment(TextAlignment.CENTER);
+			text.setFont(Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, 30));
+
+			if(isWhite)
+			{
+				text.setFill(Color.WHITE);
+				text.setStroke(Color.BLACK);
+				text.setStrokeWidth(2);
+			}
+			else
+			{
+				text.setStroke(Color.WHITE);
+				text.setStrokeWidth(2);
+				text.setFill(Color.BLACK);
+			}
+		}
 	}
 
 	public String getType()
@@ -44,7 +78,11 @@ public abstract class Figure extends Button
 	void setType(String type)
 	{
 		this.type = type;
-		text.setText(type.substring(0,1));
+
+		if(!type.equals(""))
+		{
+			text.setText(type.substring(0, 1));
+		}
 	}
 
 	void setValue(int value)
@@ -95,7 +133,7 @@ public abstract class Figure extends Button
 		return y;
 	}
 
-	public abstract void setReachableFields(PlayingField playingField);
+	public abstract void setReachableFields(FigureList figureList);
 
 	public void setReachable(boolean reachable)
 	{
@@ -116,13 +154,8 @@ public abstract class Figure extends Button
 		return isReachable;
 	}
 
-	public boolean isKing()
+	public Figure getOriginal()
 	{
-		return isKing;
-	}
-
-	public void setKing(boolean king)
-	{
-		isKing = king;
+		return original;
 	}
 }

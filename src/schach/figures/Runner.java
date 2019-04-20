@@ -1,6 +1,6 @@
 package schach.figures;
 
-import schach.PlayingField;
+import schach.FigureList;
 
 public class Runner extends Figure
 {
@@ -12,19 +12,24 @@ public class Runner extends Figure
 		this.setWhite(isWhite);
 	}
 
-	@Override
-	public void setReachableFields(PlayingField playingField)
+	public Runner(Figure figure)
 	{
-		lookInDirection(this.getX(),this.getY(),1,1,playingField);
-		lookInDirection(this.getX(),this.getY(),-1,-1,playingField);
-		lookInDirection(this.getX(),this.getY(),1,-1,playingField);
-		lookInDirection(this.getX(),this.getY(),-1,1,playingField);
+		super(figure);
 	}
 
-	private void lookInDirection(int x, int y, int plusX, int plusY, PlayingField playingField)
+	@Override
+	public void setReachableFields(FigureList figureList)
+	{
+		lookInDirection(this.getX(),this.getY(),1,1, figureList);
+		lookInDirection(this.getX(),this.getY(),-1,-1, figureList);
+		lookInDirection(this.getX(),this.getY(),1,-1, figureList);
+		lookInDirection(this.getX(),this.getY(),-1,1, figureList);
+	}
+
+	private void lookInDirection(int x, int y, int plusX, int plusY, FigureList figureList)
 	{
 		int newX = x+plusX, newY = y+plusY;
-		Figure temp = playingField.getFigureAt(newX,newY);
+		Figure temp = figureList.getFigureAt(newX,newY);
 
 		if(temp != null)
 		{
@@ -34,7 +39,7 @@ public class Runner extends Figure
 
 				if(temp.getType().equals(""))
 				{
-					lookInDirection(newX, newY, plusX, plusY, playingField);
+					lookInDirection(newX, newY, plusX, plusY, figureList);
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 package schach.figures;
 
-import schach.PlayingField;
+import schach.FigureList;
 
 public class Peasant extends Figure
 {
@@ -12,9 +12,13 @@ public class Peasant extends Figure
 		this.setWhite(isWhite);
 	}
 
+	public Peasant(Figure figure)
+	{
+		super(figure);
+	}
 
 	@Override
-	public void setReachableFields(PlayingField playingField)
+	public void setReachableFields(FigureList figureList)
 	{
 		Figure temp;
 		int y1;
@@ -31,22 +35,22 @@ public class Peasant extends Figure
 			y2 = this.getY()+2;
 		}
 
-		System.out.println(y1);
+		//System.out.println(y1);
 
-		temp = playingField.getFigureAt(this.getX(),y1);
+		temp = figureList.getFigureAt(this.getX(),y1);
 
 		if(temp!=null)
 		{
 			if (temp.getType().equals(""))
 			{
-				playingField.getFigureAt(this.getX(), y1).setReachable(true);
+				figureList.getFigureAt(this.getX(), y1).setReachable(true);
 
-				temp = playingField.getFigureAt(this.getX(),y2);
+				temp = figureList.getFigureAt(this.getX(),y2);
 				if(temp!=null)
 				{
 					if (!isMoved() &&  temp.getType().equals(""))
 					{
-						playingField.getFigureAt(this.getX(), y2).setReachable(true);
+						figureList.getFigureAt(this.getX(), y2).setReachable(true);
 					}
 				}
 			}
@@ -56,7 +60,7 @@ public class Peasant extends Figure
 
 		for(int i = -1; i <= 1; i += 2)
 		{
-			temp = playingField.getFigureAt(this.getX()+i,y1);
+			temp = figureList.getFigureAt(this.getX()+i,y1);
 			if(temp != null)
 			{
 				if (!temp.getType().equals("") && temp.isWhite() != isWhite())

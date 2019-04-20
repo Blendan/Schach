@@ -1,6 +1,6 @@
 package schach.figures;
 
-import schach.PlayingField;
+import schach.FigureList;
 
 public class Horse extends Figure
 {
@@ -12,16 +12,19 @@ public class Horse extends Figure
 		this.setWhite(isWhite);
 	}
 
-
+	public Horse(Figure figure)
+	{
+		super(figure);
+	}
 
 	@Override
-	public void setReachableFields(PlayingField playingField)
+	public void setReachableFields(FigureList figureList)
 	{
 		for(int i = -2; i <= 2; i += 4)
 		{
 			for (int j = -1; j <= 1; j += 2)
 			{
-				Figure temp = playingField.getFigureAt(this.getX()+i,this.getY()+j);
+				Figure temp = figureList.getFigureAt(this.getX()+i,this.getY()+j);
 
 				if(temp != null)
 				{
@@ -31,7 +34,7 @@ public class Horse extends Figure
 					}
 				}
 
-				temp = playingField.getFigureAt(this.getX()+j,this.getY()+i);
+				temp = figureList.getFigureAt(this.getX()+j,this.getY()+i);
 
 				if(temp != null)
 				{

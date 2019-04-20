@@ -1,14 +1,23 @@
 package schach.figures;
 
-import schach.PlayingField;
+import schach.FigureList;
 
 public class Empty extends Figure
 {
 
 	private boolean isRochadeTarget = false;
 
+	public Empty()
+	{
+	}
+
+	public Empty(Figure figure)
+	{
+		super(figure);
+	}
+
 	@Override
-	public void setReachableFields(PlayingField playingField)
+	public void setReachableFields(FigureList playingField)
 	{
 		// has no reachable fields
 	}

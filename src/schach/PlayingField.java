@@ -5,11 +5,8 @@ import javafx.beans.InvalidationListener;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
-import schach.figures.Empty;
+import schach.bot.Bot;
 import schach.figures.Figure;
-import schach.figures.King;
-
-import java.util.ArrayList;
 
 public class PlayingField
 {
@@ -18,11 +15,13 @@ public class PlayingField
 	private FigureList figures = new FigureList();
 	private Figure active = null;
 	private boolean isWhiteNow = true;
+	private Bot bot;
 
 	PlayingField(GridPane gridPaneMain, Controller controller)
 	{
 		this.gridPaneMain = gridPaneMain;
 		this.controller = controller;
+		bot = new Bot(this);
 
 		InvalidationListener scaleField = e -> scaleField();
 		gridPaneMain.heightProperty().addListener(scaleField);
@@ -37,7 +36,7 @@ public class PlayingField
 		{
 			if (value.isWhite() == isWhiteNow && !value.getType().equals(""))
 			{
-				value.setReachableFields(this);
+				value.setReachableFields(figures);
 				for (Figure check : figures)
 				{
 					if(check.isReachable())
@@ -45,7 +44,7 @@ public class PlayingField
 						return true;
 					}
 				}
-				resetReachable();
+				figures.resetReachable();
 			}
 		}
 		return false;
@@ -62,79 +61,15 @@ public class PlayingField
 		sortFigures();
 	}
 
-	void resetReachable()
-	{
-		for (Figure value : figures)
-		{
-			value.setReachable(false);
-
-			if (value.getType().equals(""))
-			{
-				((Empty) value).setRochadeTarget(false);
-			}
-			else if (value.getType().equals("King"))
-			{
-				((King) value).setInRochade(false);
-				((King) value).setTowerLeft(null);
-				((King) value).setTowerRight(null);
-			}
-		}
-	}
-
 	//moves a figure from a starting to a end position
-	private void moveFigure(Figure source, Figure target)
+	public void moveFigure(Figure source, Figure target)
 	{
-		int x = source.getX();
-		int y = source.getY();
+		figures.moveFigure(source,target,this);
 
-		int toX = target.getX();
-		int toY = target.getY();
-
-		source.setMoved(true);
-
-		//removes the figure form the GridPane
-		Platform.runLater(() -> gridPaneMain.getChildren().remove(source));
-
-		//removes the target figure
-		removeFigure(target);
-
-		//adds the figure to the target position
-		setFigureToCoordinate(toX, toY, source);
-
-
-		//adds an empty figure to the start position
-		Figure empty = new Empty();
-		setFigureToCoordinate(x, y, empty);
-
-		if (source.getType().equals("King"))
-		{
-			King king = (King) source;
-			if (king.isInRochade())
-			{
-				if (target.getType().equals(""))
-				{
-					if (((Empty) target).isRochadeTarget())
-					{
-						if (target.getX() == 2 && king.getTowerRight() != null)
-						{
-							moveFigure(king.getTowerLeft(), getFigureAt(3, y));
-						}
-						else if (target.getX() == 6 && king.getTowerRight() != null)
-						{
-							moveFigure(king.getTowerRight(), getFigureAt(5, y));
-						}
-					}
-				}
-				king.setInRochade(false);
-			}
-		}
-
-		resetReachable();
-		sortFigures();
 		scaleField();
 	}
 
-	private void removeFigure(Figure figure)
+	void removeFigure(Figure figure)
 	{
 		figures.remove(figure);
 		Platform.runLater(() -> gridPaneMain.getChildren().remove(figure));
@@ -143,11 +78,11 @@ public class PlayingField
 		{
 			if (figure.isWhite())
 			{
-				controller.end(false);
+				Platform.runLater(()->controller.end(false));
 			}
 			else
 			{
-				controller.end(true);
+				Platform.runLater(()->controller.end(true));
 			}
 		}
 	}
@@ -172,7 +107,7 @@ public class PlayingField
 	void setFigureToCoordinate(int x, int y, Figure figure)
 	{
 		boolean removedOne = false;
-		Figure temp = getFigureAt(x, y);
+		Figure temp = figures.getFigureAt(x, y);
 		if (temp != null)
 		{
 			if (temp.getX() == x && temp.getY() == y)
@@ -205,19 +140,22 @@ public class PlayingField
 						if (this.getActive() != null && figure.isReachable())
 						{
 							this.moveFigure(this.getActive(), figure);
-							this.resetReachable();
+							figures.resetReachable();
 							this.setActive(null);
 							this.sortFigures();
 
 							isWhiteNow = !isWhiteNow;
+
+							//bot.start();
+							new Bot(this).start();
 						}
 						else
 						{
-							this.resetReachable();
+							figures.resetReachable();
 							if (isWhiteNow == figure.isWhite())
 							{
 								this.setActive(figure);
-								figure.setReachableFields(this);
+								figure.setReachableFields(figures);
 							}
 						}
 					}
@@ -234,40 +172,9 @@ public class PlayingField
 		}
 	}
 
-	public Figure getFigureAt(int x, int y)
-	{
-		return figures.getFigureAt(x,y);
-	}
-
 	void sortFigures()
 	{
 		figures.sort();
-
-		boolean isBlack = false;
-		int lastY = 0;
-
-		for (Figure value : figures)
-		{
-			value.getStyleClass().clear();
-
-			if (lastY < value.getY())
-			{
-				lastY = value.getY();
-				isBlack = !isBlack;
-
-			}
-
-			if (isBlack)
-			{
-				value.getStyleClass().add("btn-black");
-			}
-			else
-			{
-				value.getStyleClass().add("btn-white");
-			}
-
-			isBlack = !isBlack;
-		}
 	}
 
 	private Figure getActive()
@@ -278,6 +185,21 @@ public class PlayingField
 	private void setActive(Figure active)
 	{
 		this.active = active;
+	}
+
+	GridPane getGridPaneMain()
+	{
+		return gridPaneMain;
+	}
+
+	public FigureList getFigures()
+	{
+		return figures;
+	}
+
+	public void setWhiteNow(boolean whiteNow)
+	{
+		isWhiteNow = whiteNow;
 	}
 }
 

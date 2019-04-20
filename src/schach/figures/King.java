@@ -1,6 +1,6 @@
 package schach.figures;
 
-import schach.PlayingField;
+import schach.FigureList;
 
 public class King extends Figure
 {
@@ -15,8 +15,13 @@ public class King extends Figure
 		this.setWhite(isWhite);
 	}
 
+	public King(Figure figure)
+	{
+		super(figure);
+	}
+
 	@Override
-	public void setReachableFields(PlayingField playingField)
+	public void setReachableFields(FigureList figureList)
 	{
 		for (int i = -1; i <= 1; i++)
 		{
@@ -24,7 +29,7 @@ public class King extends Figure
 			{
 				if (!(i == 0 && j == 0))
 				{
-					Figure temp = playingField.getFigureAt(this.getX() + i, this.getY() + j);
+					Figure temp = figureList.getFigureAt(this.getX() + i, this.getY() + j);
 
 					if (temp != null)
 					{
@@ -52,21 +57,21 @@ public class King extends Figure
 			}
 
 			Tower tower;
-			if (playingField.getFigureAt(0, y).getType().equals("Tower"))
+			if (figureList.getFigureAt(0, y).getType().equals("Tower"))
 			{
-				tower = (Tower) playingField.getFigureAt(0, y);
+				tower = (Tower) figureList.getFigureAt(0, y);
 
 				if (!tower.isMoved())
 				{
-					Figure temp = playingField.getFigureAt(2, y);
+					Figure temp = figureList.getFigureAt(2, y);
 
 					if (temp != null)
 					{
 						if (temp.getType().equals(""))
 						{
-							if (playingField.getFigureAt(3, y) != null)
+							if (figureList.getFigureAt(3, y) != null)
 							{
-								if (playingField.getFigureAt(3, y).getType().equals(""))
+								if (figureList.getFigureAt(3, y).getType().equals(""))
 								{
 									temp.setReachable(true);
 									((Empty)temp).setRochadeTarget(true);
@@ -79,21 +84,21 @@ public class King extends Figure
 				}
 			}
 
-			if (playingField.getFigureAt(7, y).getType().equals("Tower"))
+			if (figureList.getFigureAt(7, y).getType().equals("Tower"))
 			{
-				tower = (Tower) playingField.getFigureAt(7, y);
+				tower = (Tower) figureList.getFigureAt(7, y);
 
 				if (!tower.isMoved())
 				{
-					Figure temp = playingField.getFigureAt(6, y);
+					Figure temp = figureList.getFigureAt(6, y);
 
 					if (temp != null)
 					{
 						if (temp.getType().equals(""))
 						{
-							if (playingField.getFigureAt(5, y) != null)
+							if (figureList.getFigureAt(5, y) != null)
 							{
-								if (playingField.getFigureAt(5, y).getType().equals(""))
+								if (figureList.getFigureAt(5, y).getType().equals(""))
 								{
 									temp.setReachable(true);
 									((Empty)temp).setRochadeTarget(true);
