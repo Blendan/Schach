@@ -7,6 +7,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import schach.figures.Empty;
 import schach.figures.Figure;
+import schach.figures.King;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,7 @@ public class PlayingField
 {
 	private GridPane gridPaneMain;
 	private Controller controller;
-	private ArrayList<Figure> figures = new ArrayList<>();
+	private FigureList figures = new FigureList();
 	private Figure active = null;
 	private boolean isWhiteNow = true;
 
@@ -28,6 +29,26 @@ public class PlayingField
 		gridPaneMain.widthProperty().addListener(scaleField);
 
 		makeGrid();
+	}
+
+	private boolean checkIfMovePossible()
+	{
+		for (Figure value : figures)
+		{
+			if (value.isWhite() == isWhiteNow && !value.getType().equals(""))
+			{
+				value.setReachableFields(this);
+				for (Figure check : figures)
+				{
+					if(check.isReachable())
+					{
+						return true;
+					}
+				}
+				resetReachable();
+			}
+		}
+		return false;
 	}
 
 	private void makeGrid()
@@ -46,6 +67,17 @@ public class PlayingField
 		for (Figure value : figures)
 		{
 			value.setReachable(false);
+
+			if (value.getType().equals(""))
+			{
+				((Empty) value).setRochadeTarget(false);
+			}
+			else if (value.getType().equals("King"))
+			{
+				((King) value).setInRochade(false);
+				((King) value).setTowerLeft(null);
+				((King) value).setTowerRight(null);
+			}
 		}
 	}
 
@@ -74,6 +106,29 @@ public class PlayingField
 		Figure empty = new Empty();
 		setFigureToCoordinate(x, y, empty);
 
+		if (source.getType().equals("King"))
+		{
+			King king = (King) source;
+			if (king.isInRochade())
+			{
+				if (target.getType().equals(""))
+				{
+					if (((Empty) target).isRochadeTarget())
+					{
+						if (target.getX() == 2 && king.getTowerRight() != null)
+						{
+							moveFigure(king.getTowerLeft(), getFigureAt(3, y));
+						}
+						else if (target.getX() == 6 && king.getTowerRight() != null)
+						{
+							moveFigure(king.getTowerRight(), getFigureAt(5, y));
+						}
+					}
+				}
+				king.setInRochade(false);
+			}
+		}
+
 		resetReachable();
 		sortFigures();
 		scaleField();
@@ -84,7 +139,7 @@ public class PlayingField
 		figures.remove(figure);
 		Platform.runLater(() -> gridPaneMain.getChildren().remove(figure));
 
-		if(figure.getType().equals("King"))
+		if (figure.getType().equals("King"))
 		{
 			if (figure.isWhite())
 			{
@@ -181,30 +236,12 @@ public class PlayingField
 
 	public Figure getFigureAt(int x, int y)
 	{
-		if (x + y * 8 < figures.size() && x + y * 8 >= 0 && x < 8 && y < 8 && x >= 0 && y >= 0)
-		{
-			return figures.get(x + y * 8);
-		}
-		else
-		{
-			return null;
-		}
+		return figures.getFigureAt(x,y);
 	}
 
 	void sortFigures()
 	{
-		figures.sort((a, b) ->
-		{
-			if ((a.getX() + a.getY() * 8) < (b.getX() + b.getY() * 8))
-			{
-				return -1;
-			}
-			else if ((a.getX() + a.getY() * 8) > (b.getX() + b.getY() * 8))
-			{
-				return 1;
-			}
-			return 0;
-		});
+		figures.sort();
 
 		boolean isBlack = false;
 		int lastY = 0;
