@@ -11,6 +11,9 @@ public class Bot extends Thread
 	private PlayingField playingField;
 	@SuppressWarnings("FieldCanBeLocal")
 	private int roundsToCheck = 1;
+	private int moveLength = 0, movesFinished = 0;
+	private boolean madeAllMoves = false;
+	private ArrayList<Move> moves = new ArrayList<>();
 
 	public Bot(PlayingField playingField)
 	{
@@ -52,10 +55,19 @@ public class Bot extends Thread
 		return temp;
 	}
 
+	private void waitForFinishing(int number)
+	{
+		movesFinished += number;
+
+		if (movesFinished == moveLength && madeAllMoves)
+		{
+			makeBestMove();
+		}
+	}
+
 	@Override
 	public void run()
 	{
-		ArrayList<Move> moves = new ArrayList<>();
 		FigureList figureList = copyList(playingField.getFigures());
 		figureList.sort();
 		for (Figure value : copyList(playingField.getFigures()))
@@ -75,14 +87,24 @@ public class Bot extends Thread
 
 						newValue = 0 - reachableFigure.getValue();
 
-						moves.add(new Move(value, reachableFigure, checkMoves(temp, newValue, true, 1)));
+						moveLength ++;
+						new Thread(() ->
+						{
+							moves.add(new Move(value, reachableFigure, checkMoves(temp, newValue, true, 1)));
+							waitForFinishing(1);
+						}).start();
 					}
 				}
 				figureList.resetReachable();
 			}
 		}
 
+		madeAllMoves = true;
+		waitForFinishing(0);
+	}
 
+	private void makeBestMove()
+	{
 		int bestValue = 9999;
 		ArrayList<Move> bestMoves = new ArrayList<>();
 		System.out.println("---------");
@@ -100,7 +122,7 @@ public class Bot extends Thread
 				else if (bestValue == value.getValue())
 				{
 					bestMoves.add(value);
-					System.out.println(value.getSource().getType()+"-");
+					System.out.println(value.getSource().getType() + "-");
 				}
 			}
 
@@ -114,7 +136,7 @@ public class Bot extends Thread
 		Figure target = bestMoves.get(random).getTarget().getOriginal();
 		playingField.moveFigure(source, target);
 
-		System.out.println(bestMoves.get(random).getSource().getX()+"  "+source.getX() + "|" + source.getY() + "|" + source.getType() +"|"+ bestMoves.get(random).getSource().getType());
+		System.out.println(bestMoves.get(random).getSource().getX() + "  " + source.getX() + "|" + source.getY() + "|" + source.getType() + "|" + bestMoves.get(random).getSource().getType());
 		System.out.println(target.getX() + "|" + target.getY() + "|" + target.getType());
 		playingField.setWhiteNow(true);
 	}
