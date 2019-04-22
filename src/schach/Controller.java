@@ -71,7 +71,8 @@ public class Controller implements Initializable
 
 		playingField.setFigureToCoordinate(4, 7, new King(true));
 
-		playingField.sortFigures();
+		playingField.getFigures().sort();
+		playingField.getFigures().colorFields();
 		playingField.getFigures().resetReachable();
 		playingField.scaleField();
 	}

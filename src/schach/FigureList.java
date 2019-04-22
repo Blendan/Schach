@@ -27,44 +27,15 @@ public class FigureList extends ArrayList<Figure>
 			{
 				return 1;
 			}
-			return 0;
-		});
-
-		boolean isBlack = false;
-		int lastY = 0;
-
-		for (Figure value : this)
-		{
-			try
-			{
-				value.getStyleClass().clear();
-			}
-			catch (NullPointerException e)
-			{
-				System.out.println("That shit again ("+e.getMessage()+")");
-			}
-
-			if (lastY < value.getY())
-			{
-				lastY = value.getY();
-				isBlack = !isBlack;
-
-			}
-
-			if (isBlack)
-			{
-				value.getStyleClass().add("btn-black");
-			}
 			else
 			{
-				value.getStyleClass().add("btn-white");
+				System.out.println(a.getType()+"=="+b.getType()+"  x:"+b.getX()+" y:"+b.getY()+"  "+size()); //TODO remove debug
 			}
-
-			isBlack = !isBlack;
-		}
+			return 0;
+		});
 	}
 
-	private void colorFields()
+	void colorFields()
 	{
 		boolean isBlack = false;
 		int lastY = 0;
@@ -112,16 +83,29 @@ public class FigureList extends ArrayList<Figure>
 		}
 	}
 
+	public Figure getFigureAt(Figure figure)
+	{
+		int x = figure.getX();
+		int y = figure.getY();
+
+		if (x + y * 8 < this.size() && x + y * 8 >= 0 && x < 8 && y < 8 && x >= 0 && y >= 0)
+		{
+			return this.get(x + y * 8);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	private void setFigureToCoordinate(int x, int y, Figure figure)
 	{
-		boolean removedOne = false;
 		Figure temp = getFigureAt(x, y);
 		if (temp != null)
 		{
 			if (temp.getX() == x && temp.getY() == y)
 			{
 				this.remove(temp);
-				removedOne = true;
 			}
 		}
 
@@ -132,10 +116,7 @@ public class FigureList extends ArrayList<Figure>
 
 		figure.setCoordinate(x, y);
 
-		if (removedOne)
-		{
-			sort();
-		}
+		sort();
 	}
 
 	//for the bot (no need to display list)
@@ -149,9 +130,15 @@ public class FigureList extends ArrayList<Figure>
 
 		source.setMoved(true);
 
-
 		//removes the target figure
-		this.remove(target);
+		if(!this.contains(target))
+		{
+			System.out.println("dafuck?? \""+target.getType()+"\" \""+getFigureAt(target).getType()+"\""); //TODO remove debug
+		}
+		else
+		{
+			this.remove(target);
+		}
 
 		//adds the figure to the target position
 		this.setFigureToCoordinate(toX, toY, source);

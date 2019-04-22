@@ -8,6 +8,8 @@ import javafx.scene.layout.RowConstraints;
 import schach.bot.Bot;
 import schach.figures.Figure;
 
+import java.util.Random;
+
 public class PlayingField
 {
 	private GridPane gridPaneMain;
@@ -15,13 +17,12 @@ public class PlayingField
 	private FigureList figures = new FigureList();
 	private Figure active = null;
 	private boolean isWhiteNow = true;
-	private Bot bot;
+	private Random random = new Random();
 
 	PlayingField(GridPane gridPaneMain, Controller controller)
 	{
 		this.gridPaneMain = gridPaneMain;
 		this.controller = controller;
-		bot = new Bot(this);
 
 		InvalidationListener scaleField = e -> scaleField();
 		gridPaneMain.heightProperty().addListener(scaleField);
@@ -147,7 +148,7 @@ public class PlayingField
 							isWhiteNow = !isWhiteNow;
 
 							//bot.start();
-							new Bot(this).start();
+							new Bot(this,random).start();
 						}
 						else
 						{

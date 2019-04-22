@@ -6,16 +6,19 @@ import schach.PlayingField;
 import schach.figures.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Bot extends Thread
 {
 	private PlayingField playingField;
 	@SuppressWarnings("FieldCanBeLocal")
-	private int roundsToCheck = 2;
+	private int roundsToCheck = 0, rounds = 0;
 	private ArrayList<Move> moves = new ArrayList<>();
+	private Random random;
 
-	public Bot(PlayingField playingField)
+	public Bot(PlayingField playingField, Random random)
 	{
+		this.random = random;
 		this.playingField = playingField;
 	}
 
@@ -25,31 +28,40 @@ public class Bot extends Thread
 
 		for (Figure value : figureList)
 		{
-			switch (value.getType())
+			if(temp.getFigureAt(value)==null)
 			{
-				case "":
-					temp.add(new Empty(value));
-					break;
-				case "King":
-					temp.add(new King(value));
-					break;
-				case "Queen":
-					temp.add(new Queen(value));
-					break;
-				case "Runner":
-					temp.add(new Runner(value));
-					break;
-				case "Horse":
-					temp.add(new Horse(value));
-					break;
-				case "Tower":
-					temp.add(new Tower(value));
-					break;
-				case "Peasant":
-					temp.add(new Peasant(value));
-					break;
+				switch (value.getType())
+				{
+					case "":
+						temp.add(new Empty(value));
+						break;
+					case "King":
+						temp.add(new King(value));
+						break;
+					case "Queen":
+						temp.add(new Queen(value));
+						break;
+					case "Runner":
+						temp.add(new Runner(value));
+						break;
+					case "Horse":
+						temp.add(new Horse(value));
+						break;
+					case "Tower":
+						temp.add(new Tower(value));
+						break;
+					case "Peasant":
+						temp.add(new Peasant(value));
+						break;
+				}
+			}
+			else
+			{
+				System.out.println("Their is something");
 			}
 		}
+
+		temp.sort();
 
 		return temp;
 	}
@@ -58,8 +70,8 @@ public class Bot extends Thread
 	public void run()
 	{
 		FigureList figureList = copyList(playingField.getFigures());
-		figureList.sort();
-		for (Figure value : copyList(playingField.getFigures()))
+
+		for (Figure value : figureList)
 		{
 			if (!value.isWhite() && !value.getType().equals(""))
 			{
@@ -70,10 +82,8 @@ public class Bot extends Thread
 					{
 						FigureList temp = copyList(figureList);
 						temp.moveFigure(value, reachableFigure);
-						temp.sort();
 
 						moves.add(new Move(value, reachableFigure, checkMoves(temp, Integer.MIN_VALUE, Integer.MAX_VALUE, true, 1)));
-
 					}
 				}
 				figureList.resetReachable();
@@ -110,14 +120,15 @@ public class Bot extends Thread
 			//System.out.println(value.getValue());
 		}
 
+		System.out.println(rounds);
 		System.out.println("\n" + moves.size() + "|" + bestValue);
 
-		int random = (int) (Math.random() * bestMoves.size());
-		Figure source = bestMoves.get(random).getSource().getOriginal();
-		Figure target = bestMoves.get(random).getTarget().getOriginal();
+		int randomInt = random.nextInt(bestMoves.size());
+		Figure source = bestMoves.get(randomInt).getSource().getOriginal();
+		Figure target = bestMoves.get(randomInt).getTarget().getOriginal();
 		playingField.moveFigure(source, target);
 
-		System.out.println(bestMoves.get(random).getSource().getX() + "  " + source.getX() + "|" + source.getY() + "|" + source.getType() + "|" + bestMoves.get(random).getSource().getType());
+		System.out.println(source.getX() + "|" + source.getY() + "|" + source.getType());
 		System.out.println(target.getX() + "|" + target.getY() + "|" + target.getType());
 		playingField.setWhiteNow(true);
 	}
@@ -126,8 +137,16 @@ public class Bot extends Thread
 	{
 		if (i <= roundsToCheck)
 		{
-			int bestMove = 0;
-			boolean isFirst = true;
+			int bestMove;
+
+			if (isWhiteNow)
+			{
+				bestMove = Integer.MIN_VALUE;
+			}
+			else
+			{
+				bestMove = Integer.MAX_VALUE;
+			}
 
 			for (Figure value : figureList)
 			{
@@ -137,22 +156,19 @@ public class Bot extends Thread
 					if (reachableFigure.isReachable())
 					{
 						FigureList temp = copyList(figureList);
-						temp.moveFigure(value, reachableFigure);
+						temp.moveFigure(temp.getFigureAt(value), temp.getFigureAt(reachableFigure));
 
 						int tempMove = checkMoves(temp, alpha, beta, !isWhiteNow, i + 1);
 
-						if (isFirst)
+						if (isWhiteNow)
 						{
-							isFirst = false;
-							bestMove = tempMove;
-						}
-						else if (isWhiteNow)
-						{
-
 							if (bestMove < tempMove)
 							{
 								bestMove = tempMove;
-								alpha = bestMove;
+								if (beta < bestMove)
+								{
+									beta = bestMove;
+								}
 							}
 						}
 						else
@@ -160,7 +176,10 @@ public class Bot extends Thread
 							if (bestMove > tempMove)
 							{
 								bestMove = tempMove;
-								beta = bestMove;
+								if (beta > bestMove)
+								{
+									beta = bestMove;
+								}
 							}
 						}
 
@@ -177,6 +196,7 @@ public class Bot extends Thread
 		}
 		else
 		{
+			rounds ++;
 			return getValue(figureList);
 		}
 	}
@@ -186,24 +206,30 @@ public class Bot extends Thread
 		int i = 0;
 		boolean lostKing = true;
 
+		//System.out.println(figureList.size());
+
 		for (Figure value : figureList)
 		{
-			if (value.isWhite())
+			if(!value.getType().equals(""))
 			{
-				i += value.getValue();
-			}
-			else
-			{
-				i -= value.getValue();
-
-				if(value.getType().equals("King"))
+				if (value.isWhite())
 				{
-					lostKing = false;
+					i += value.getValue();
+				}
+				else
+				{
+					i -= value.getValue();
+
+
+					if (value.getType().equals("King"))
+					{
+						lostKing = false;
+					}
 				}
 			}
 		}
 
-		if(lostKing)
+		if (lostKing)
 		{
 			return Integer.MAX_VALUE;
 		}
