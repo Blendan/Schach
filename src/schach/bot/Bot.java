@@ -1,5 +1,6 @@
 package schach.bot;
 
+import javafx.application.Platform;
 import schach.FigureList;
 import schach.PlayingField;
 import schach.figures.*;
@@ -10,9 +11,7 @@ public class Bot extends Thread
 {
 	private PlayingField playingField;
 	@SuppressWarnings("FieldCanBeLocal")
-	private int roundsToCheck = 1;
-	private int moveLength = 0, movesFinished = 0;
-	private boolean madeAllMoves = false;
+	private int roundsToCheck = 2;
 	private ArrayList<Move> moves = new ArrayList<>();
 
 	public Bot(PlayingField playingField)
@@ -55,16 +54,6 @@ public class Bot extends Thread
 		return temp;
 	}
 
-	private void waitForFinishing(int number)
-	{
-		movesFinished += number;
-
-		if (movesFinished == moveLength && madeAllMoves)
-		{
-			makeBestMove();
-		}
-	}
-
 	@Override
 	public void run()
 	{
@@ -83,31 +72,22 @@ public class Bot extends Thread
 						temp.moveFigure(value, reachableFigure);
 						temp.sort();
 
-						int newValue;
+						moves.add(new Move(value, reachableFigure, checkMoves(temp, Integer.MIN_VALUE, Integer.MAX_VALUE, true, 1)));
 
-						newValue = 0 - reachableFigure.getValue();
-
-						moveLength ++;
-						new Thread(() ->
-						{
-							moves.add(new Move(value, reachableFigure, checkMoves(temp, newValue, true, 1)));
-							waitForFinishing(1);
-						}).start();
 					}
 				}
 				figureList.resetReachable();
 			}
 		}
 
-		madeAllMoves = true;
-		waitForFinishing(0);
+		Platform.runLater(this::makeBestMove);
 	}
 
 	private void makeBestMove()
 	{
-		int bestValue = 9999;
+		int bestValue = Integer.MAX_VALUE;
 		ArrayList<Move> bestMoves = new ArrayList<>();
-		System.out.println("---------");
+		System.out.println("---------\nBest Moves:\n---------");
 
 		for (Move value : moves)
 		{
@@ -118,6 +98,7 @@ public class Bot extends Thread
 					bestValue = value.getValue();
 					bestMoves.clear();
 					bestMoves.add(value);
+					System.out.println(value.getSource().getType() + "-");
 				}
 				else if (bestValue == value.getValue())
 				{
@@ -141,12 +122,13 @@ public class Bot extends Thread
 		playingField.setWhiteNow(true);
 	}
 
-	private int checkMoves(FigureList figureList, int valueBefore, boolean isWhiteNow, int i)
+	private int checkMoves(FigureList figureList, int alpha, int beta, boolean isWhiteNow, int i)
 	{
-		System.out.println(valueBefore);
 		if (i <= roundsToCheck)
 		{
-			ArrayList<Move> moves = new ArrayList<>();
+			int bestMove = 0;
+			boolean isFirst = true;
+
 			for (Figure value : figureList)
 			{
 				value.setReachableFields(figureList);
@@ -157,49 +139,75 @@ public class Bot extends Thread
 						FigureList temp = copyList(figureList);
 						temp.moveFigure(value, reachableFigure);
 
-						int newValue;
+						int tempMove = checkMoves(temp, alpha, beta, !isWhiteNow, i + 1);
 
-						if (isWhiteNow)
+						if (isFirst)
 						{
-							newValue = valueBefore + reachableFigure.getValue();
+							isFirst = false;
+							bestMove = tempMove;
+						}
+						else if (isWhiteNow)
+						{
+
+							if (bestMove < tempMove)
+							{
+								bestMove = tempMove;
+								alpha = bestMove;
+							}
 						}
 						else
 						{
-							newValue = valueBefore - reachableFigure.getValue();
+							if (bestMove > tempMove)
+							{
+								bestMove = tempMove;
+								beta = bestMove;
+							}
 						}
 
-						moves.add(new Move(checkMoves(temp, newValue, !isWhiteNow, i + 1)));
+						if (beta <= alpha)
+						{
+							return tempMove;
+						}
 					}
 				}
 				figureList.resetReachable();
 			}
 
-
-			int bestValue = 0;
-			for (Move value : moves)
-			{
-				if (isWhiteNow)
-				{
-					if (bestValue < value.getValue())
-					{
-						bestValue = value.getValue();
-					}
-				}
-				else
-				{
-					if (bestValue > value.getValue())
-					{
-						bestValue = value.getValue();
-
-					}
-				}
-			}
-
-			return bestValue;
+			return bestMove;
 		}
 		else
 		{
-			return valueBefore;
+			return getValue(figureList);
 		}
+	}
+
+	private int getValue(FigureList figureList)
+	{
+		int i = 0;
+		boolean lostKing = true;
+
+		for (Figure value : figureList)
+		{
+			if (value.isWhite())
+			{
+				i += value.getValue();
+			}
+			else
+			{
+				i -= value.getValue();
+
+				if(value.getType().equals("King"))
+				{
+					lostKing = false;
+				}
+			}
+		}
+
+		if(lostKing)
+		{
+			return Integer.MAX_VALUE;
+		}
+
+		return i;
 	}
 }

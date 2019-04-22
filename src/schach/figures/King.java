@@ -10,7 +10,7 @@ public class King extends Figure
 	public King(boolean isWhite)
 	{
 		super();
-		setValue(999999);
+		setValue(9999999);
 		setType("King");
 		this.setWhite(isWhite);
 	}

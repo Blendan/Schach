@@ -35,7 +35,50 @@ public class FigureList extends ArrayList<Figure>
 
 		for (Figure value : this)
 		{
-			value.getStyleClass().clear();
+			try
+			{
+				value.getStyleClass().clear();
+			}
+			catch (NullPointerException e)
+			{
+				System.out.println("That shit again ("+e.getMessage()+")");
+			}
+
+			if (lastY < value.getY())
+			{
+				lastY = value.getY();
+				isBlack = !isBlack;
+
+			}
+
+			if (isBlack)
+			{
+				value.getStyleClass().add("btn-black");
+			}
+			else
+			{
+				value.getStyleClass().add("btn-white");
+			}
+
+			isBlack = !isBlack;
+		}
+	}
+
+	private void colorFields()
+	{
+		boolean isBlack = false;
+		int lastY = 0;
+
+		for (Figure value : this)
+		{
+			try
+			{
+				value.getStyleClass().clear();
+			}
+			catch (NullPointerException e)
+			{
+				System.out.println("That shit again ("+e.getMessage()+")");
+			}
 
 			if (lastY < value.getY())
 			{
@@ -194,6 +237,7 @@ public class FigureList extends ArrayList<Figure>
 
 		resetReachable();
 		sort();
+		colorFields();
 	}
 
 	public void resetReachable()
