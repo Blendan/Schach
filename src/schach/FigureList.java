@@ -17,6 +17,7 @@ public class FigureList extends ArrayList<Figure>
 
 	public void sort()
 	{
+		ArrayList<Figure> toRemove = new ArrayList<>();
 		super.sort((a, b) ->
 		{
 			if ((a.getX() + a.getY() * 8) < (b.getX() + b.getY() * 8))
@@ -29,10 +30,17 @@ public class FigureList extends ArrayList<Figure>
 			}
 			else
 			{
-				System.out.println(a.getType()+"=="+b.getType()+"  x:"+b.getX()+" y:"+b.getY()+"  "+size()); //TODO remove debug
+				toRemove.add(a);
 			}
 			return 0;
 		});
+
+		this.removeAll(toRemove);
+
+		if(toRemove.size()!=0)
+		{
+			sort();
+		}
 	}
 
 	void colorFields()
@@ -125,20 +133,24 @@ public class FigureList extends ArrayList<Figure>
 		int x = source.getX();
 		int y = source.getY();
 
+		source = getFigureAt(source);
+
 		int toX = target.getX();
 		int toY = target.getY();
+
+		target = getFigureAt(target);
 
 		source.setMoved(true);
 
 		//removes the target figure
-		if(!this.contains(target))
+		/*if(!this.contains(target))
 		{
 			System.out.println("dafuck?? \""+target.getType()+"\" \""+getFigureAt(target).getType()+"\""); //TODO remove debug
 		}
 		else
 		{
 			this.remove(target);
-		}
+		}*/
 
 		//adds the figure to the target position
 		this.setFigureToCoordinate(toX, toY, source);

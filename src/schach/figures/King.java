@@ -84,31 +84,39 @@ public class King extends Figure
 				}
 			}
 
-			if (figureList.getFigureAt(7, y).getType().equals("Tower"))
+			try
 			{
-				tower = (Tower) figureList.getFigureAt(7, y);
 
-				if (!tower.isMoved())
+				if (figureList.getFigureAt(7, y).getType().equals("Tower"))
 				{
-					Figure temp = figureList.getFigureAt(6, y);
+					tower = (Tower) figureList.getFigureAt(7, y);
 
-					if (temp != null)
+					if (!tower.isMoved())
 					{
-						if (temp.getType().equals(""))
+						Figure temp = figureList.getFigureAt(6, y);
+
+						if (temp != null)
 						{
-							if (figureList.getFigureAt(5, y) != null)
+							if (temp.getType().equals(""))
 							{
-								if (figureList.getFigureAt(5, y).getType().equals(""))
+								if (figureList.getFigureAt(5, y) != null)
 								{
-									temp.setReachable(true);
-									((Empty)temp).setRochadeTarget(true);
-									towerRight = tower;
-									isInRochade = true;
+									if (figureList.getFigureAt(5, y).getType().equals(""))
+									{
+										temp.setReachable(true);
+										((Empty) temp).setRochadeTarget(true);
+										towerRight = tower;
+										isInRochade = true;
+									}
 								}
 							}
 						}
 					}
 				}
+			}
+			catch (NullPointerException e)
+			{
+				System.out.println("Tower right not found");
 			}
 		}
 	}

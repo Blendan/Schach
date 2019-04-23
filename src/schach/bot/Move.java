@@ -14,11 +14,6 @@ class Move
 		this.value = value;
 	}
 
-	Move(int value)
-	{
-		this.value = value;
-	}
-
 	Figure getSource()
 	{
 		return source;

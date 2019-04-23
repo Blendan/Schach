@@ -12,7 +12,7 @@ public class Bot extends Thread
 {
 	private PlayingField playingField;
 	@SuppressWarnings("FieldCanBeLocal")
-	private int roundsToCheck = 0, rounds = 0;
+	private int roundsToCheck = 1, rounds = 0;
 	private ArrayList<Move> moves = new ArrayList<>();
 	private Random random;
 
@@ -28,40 +28,32 @@ public class Bot extends Thread
 
 		for (Figure value : figureList)
 		{
-			if(temp.getFigureAt(value)==null)
+			switch (value.getType())
 			{
-				switch (value.getType())
-				{
-					case "":
-						temp.add(new Empty(value));
-						break;
-					case "King":
-						temp.add(new King(value));
-						break;
-					case "Queen":
-						temp.add(new Queen(value));
-						break;
-					case "Runner":
-						temp.add(new Runner(value));
-						break;
-					case "Horse":
-						temp.add(new Horse(value));
-						break;
-					case "Tower":
-						temp.add(new Tower(value));
-						break;
-					case "Peasant":
-						temp.add(new Peasant(value));
-						break;
-				}
+				case "":
+					temp.add(new Empty(value));
+					break;
+				case "King":
+					temp.add(new King(value));
+					break;
+				case "Queen":
+					temp.add(new Queen(value));
+					break;
+				case "Runner":
+					temp.add(new Runner(value));
+					break;
+				case "Horse":
+					temp.add(new Horse(value));
+					break;
+				case "Tower":
+					temp.add(new Tower(value));
+					break;
+				case "Peasant":
+					temp.add(new Peasant(value));
+					break;
 			}
-			else
-			{
-				System.out.println("Their is something");
-			}
-		}
 
-		temp.sort();
+		}
 
 		return temp;
 	}
@@ -81,6 +73,7 @@ public class Bot extends Thread
 					if (reachableFigure.isReachable())
 					{
 						FigureList temp = copyList(figureList);
+
 						temp.moveFigure(value, reachableFigure);
 
 						moves.add(new Move(value, reachableFigure, checkMoves(temp, Integer.MIN_VALUE, Integer.MAX_VALUE, true, 1)));
@@ -105,10 +98,11 @@ public class Bot extends Thread
 			{
 				if (bestValue > value.getValue())
 				{
+					System.out.println("###");
 					bestValue = value.getValue();
 					bestMoves.clear();
 					bestMoves.add(value);
-					System.out.println(value.getSource().getType() + "-");
+					System.out.println(value.getSource().getType() + "-" + value.getValue());
 				}
 				else if (bestValue == value.getValue())
 				{
@@ -120,8 +114,8 @@ public class Bot extends Thread
 			//System.out.println(value.getValue());
 		}
 
-		System.out.println(rounds);
-		System.out.println("\n" + moves.size() + "|" + bestValue);
+		System.out.println("\n"+rounds);
+		System.out.println(moves.size() + "|" + bestValue);
 
 		int randomInt = random.nextInt(bestMoves.size());
 		Figure source = bestMoves.get(randomInt).getSource().getOriginal();
@@ -196,7 +190,7 @@ public class Bot extends Thread
 		}
 		else
 		{
-			rounds ++;
+			rounds++;
 			return getValue(figureList);
 		}
 	}
@@ -206,11 +200,9 @@ public class Bot extends Thread
 		int i = 0;
 		boolean lostKing = true;
 
-		//System.out.println(figureList.size());
-
 		for (Figure value : figureList)
 		{
-			if(!value.getType().equals(""))
+			if (!value.getType().equals(""))
 			{
 				if (value.isWhite())
 				{
