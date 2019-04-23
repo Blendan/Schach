@@ -1,9 +1,7 @@
 package schach;
 
 import javafx.application.Platform;
-import schach.figures.Empty;
-import schach.figures.Figure;
-import schach.figures.King;
+import schach.figures.*;
 
 import java.util.ArrayList;
 
@@ -15,7 +13,7 @@ public class FigureList extends ArrayList<Figure>
 
 	}
 
-	public void sort()
+	void sort()
 	{
 		ArrayList<Figure> toRemove = new ArrayList<>();
 		super.sort((a, b) ->
@@ -142,18 +140,16 @@ public class FigureList extends ArrayList<Figure>
 
 		source.setMoved(true);
 
-		//removes the target figure
-		/*if(!this.contains(target))
+		if(source.getType().equals("Peasant")&&(toY==0&&source.isWhite()||toY==7&&!source.isWhite()))
 		{
-			System.out.println("dafuck?? \""+target.getType()+"\" \""+getFigureAt(target).getType()+"\""); //TODO remove debug
+				this.setFigureToCoordinate(toX, toY, new Queen(source.isWhite()));
+				this.remove(source);
+				this.sort();
 		}
 		else
 		{
-			this.remove(target);
-		}*/
-
-		//adds the figure to the target position
-		this.setFigureToCoordinate(toX, toY, source);
+			this.setFigureToCoordinate(toX, toY, source);
+		}
 
 
 		//adds an empty figure to the start position
@@ -204,7 +200,17 @@ public class FigureList extends ArrayList<Figure>
 		playingField.removeFigure(target);
 
 		//adds the figure to the target position
-		playingField.setFigureToCoordinate(toX, toY, source);
+		if(source.getType().equals("Peasant")&&(toY==0&&source.isWhite()||toY==7&&!source.isWhite()))
+		{
+			playingField.setFigureToCoordinate(toX, toY, new Queen(source.isWhite()));
+			this.remove(source);
+			this.sort();
+		}
+		else
+		{
+			playingField.setFigureToCoordinate(toX, toY, source);
+		}
+
 
 
 		//adds an empty figure to the start position
@@ -252,8 +258,6 @@ public class FigureList extends ArrayList<Figure>
 			else if (value.getType().equals("King"))
 			{
 				((King) value).setInRochade(false);
-				((King) value).setTowerLeft(null);
-				((King) value).setTowerRight(null);
 			}
 		}
 	}

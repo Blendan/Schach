@@ -73,4 +73,31 @@ public class Peasant extends Figure
 		//TODO stuff that happens when end zone is reached
 
 	}
+
+	void setReachableFieldsForKing(FigureList figureList)
+	{
+		Figure temp;
+		int y;
+
+		if(isWhite())
+		{
+			y = this.getY()-1;
+		}
+		else
+		{
+			y = this.getY()+1;
+		}
+
+		for(int i = -1; i <= 1; i += 2)
+		{
+			temp = figureList.getFigureAt(this.getX()+i,y);
+			if(temp != null)
+			{
+				if (temp.getType().equals(""))
+				{
+					temp.setReachable(true);
+				}
+			}
+		}
+	}
 }

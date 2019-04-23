@@ -16,8 +16,9 @@ public class Bot extends Thread
 	private ArrayList<Move> moves = new ArrayList<>();
 	private Random random;
 
-	public Bot(PlayingField playingField, Random random)
+	public Bot(PlayingField playingField, Random random, int roundsToCheck)
 	{
+		this.roundsToCheck = roundsToCheck;
 		this.random = random;
 		this.playingField = playingField;
 	}
@@ -129,7 +130,7 @@ public class Bot extends Thread
 
 	private int checkMoves(FigureList figureList, int alpha, int beta, boolean isWhiteNow, int i)
 	{
-		if (i <= roundsToCheck)
+		if (i < roundsToCheck)
 		{
 			int bestMove;
 

@@ -3,6 +3,8 @@ package schach;
 import fxPopup.FxInfo;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 import schach.figures.*;
 
@@ -13,7 +15,13 @@ public class Controller implements Initializable
 {
 
 	@FXML
+	private ComboBox<String> comboBoxDifficulty;
+
+	@FXML
 	private GridPane gridPaneMain;
+
+	@FXML
+	private Button btnBot;
 
 	private PlayingField playingField;
 
@@ -22,7 +30,39 @@ public class Controller implements Initializable
 	{
 		playingField = new PlayingField(gridPaneMain, this);
 
+		for(int i = 1; i <= 3; i ++)
+		{
+			comboBoxDifficulty.getItems().add(i+"");
+		}
+
+		comboBoxDifficulty.getSelectionModel().select(0);
+
+		btnBot.setOnAction(e->toggleBot());
+		comboBoxDifficulty.setOnAction(e->setDifficulty());
+
 		placeFigures();
+	}
+
+	private void setDifficulty()
+	{
+		if(comboBoxDifficulty.getSelectionModel().getSelectedItem()!=null)
+		{
+			playingField.setDifficulty(Integer.parseInt(comboBoxDifficulty.getSelectionModel().getSelectedItem()));
+		}
+	}
+
+	private void toggleBot()
+	{
+		playingField.setBotActive(!playingField.isBotActive());
+
+		if(playingField.isBotActive())
+		{
+			btnBot.setText("Bot ON");
+		}
+		else
+		{
+			btnBot.setText("Bot OFF");
+		}
 	}
 
 	private void placeFigures()

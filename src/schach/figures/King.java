@@ -2,6 +2,8 @@ package schach.figures;
 
 import schach.FigureList;
 
+import java.util.ArrayList;
+
 public class King extends Figure
 {
 	private boolean isInRochade = false;
@@ -23,6 +25,26 @@ public class King extends Figure
 	@Override
 	public void setReachableFields(FigureList figureList)
 	{
+		towerRight = null;
+		towerLeft = null;
+
+		ArrayList<Figure> reachable = new ArrayList<>();
+
+		for (Figure value : figureList)
+		{
+			if (value.isWhite() != isWhite() && !value.getType().equals("") && !value.getType().equals("King"))
+			{
+				if(value.getType().equals("Peasant"))
+				{
+					((Peasant)value).setReachableFieldsForKing(figureList);
+				}
+				else
+				{
+					value.setReachableFields(figureList);
+				}
+			}
+		}
+
 		for (int i = -1; i <= 1; i++)
 		{
 			for (int j = -1; j <= 1; j++)
@@ -33,9 +55,12 @@ public class King extends Figure
 
 					if (temp != null)
 					{
-						if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
+						if(!temp.isReachable())
 						{
-							temp.setReachable(true);
+							if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
+							{
+								reachable.add(temp);
+							}
 						}
 					}
 				}
@@ -44,17 +69,20 @@ public class King extends Figure
 
 		//Rochade
 
+		Empty empty1 = null, empty2 = null;
+		int y;
+		if (isWhite())
+		{
+			y = 7;
+		}
+		else
+		{
+			y = 0;
+		}
+
 		if (!isMoved())
 		{
-			int y;
-			if (isWhite())
-			{
-				y = 7;
-			}
-			else
-			{
-				y = 0;
-			}
+
 
 			Tower tower;
 			if (figureList.getFigureAt(0, y).getType().equals("Tower"))
@@ -67,16 +95,15 @@ public class King extends Figure
 
 					if (temp != null)
 					{
-						if (temp.getType().equals(""))
+						if (temp.getType().equals("") && !temp.isReachable())
 						{
 							if (figureList.getFigureAt(3, y) != null)
 							{
 								if (figureList.getFigureAt(3, y).getType().equals(""))
 								{
-									temp.setReachable(true);
-									((Empty)temp).setRochadeTarget(true);
+									reachable.add(temp);
+									empty1 = (Empty)temp;
 									towerLeft = tower;
-									isInRochade = true;
 								}
 							}
 						}
@@ -84,56 +111,53 @@ public class King extends Figure
 				}
 			}
 
-			try
+			if (figureList.getFigureAt(7, y).getType().equals("Tower"))
 			{
+				tower = (Tower) figureList.getFigureAt(7, y);
 
-				if (figureList.getFigureAt(7, y).getType().equals("Tower"))
+				if (!tower.isMoved())
 				{
-					tower = (Tower) figureList.getFigureAt(7, y);
+					Figure temp = figureList.getFigureAt(6, y);
 
-					if (!tower.isMoved())
+					if (temp != null)
 					{
-						Figure temp = figureList.getFigureAt(6, y);
-
-						if (temp != null)
+						if (temp.getType().equals("") && !temp.isReachable())
 						{
-							if (temp.getType().equals(""))
+							if (figureList.getFigureAt(5, y) != null)
 							{
-								if (figureList.getFigureAt(5, y) != null)
+								if (figureList.getFigureAt(5, y).getType().equals(""))
 								{
-									if (figureList.getFigureAt(5, y).getType().equals(""))
-									{
-										temp.setReachable(true);
-										((Empty) temp).setRochadeTarget(true);
-										towerRight = tower;
-										isInRochade = true;
-									}
+									reachable.add(temp);
+									empty2 = (Empty)temp;
+									towerRight = tower;
 								}
 							}
 						}
 					}
 				}
-			}
-			catch (NullPointerException e)
-			{
-				System.out.println("Tower right not found");
 			}
 		}
+
+		figureList.resetReachable();
+
+		if(towerLeft!=null)
+		{
+			isInRochade = true;
+			empty1.setRochadeTarget(true);
+		}
+
+		if(towerRight!=null)
+		{
+			isInRochade = true;
+			empty2.setRochadeTarget(true);
+		}
+
+		reachable.forEach(v->v.setReachable(true));
 	}
 
 	public void setInRochade(boolean inRochade)
 	{
 		isInRochade = inRochade;
-	}
-
-	public void setTowerLeft(Tower towerLeft)
-	{
-		this.towerLeft = towerLeft;
-	}
-
-	public void setTowerRight(Tower towerRight)
-	{
-		this.towerRight = towerRight;
 	}
 
 	public boolean isInRochade()

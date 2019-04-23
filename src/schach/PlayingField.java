@@ -16,8 +16,10 @@ public class PlayingField
 	private Controller controller;
 	private FigureList figures = new FigureList();
 	private Figure active = null;
+	private boolean isBotActive = true;
 	private boolean isWhiteNow = true;
 	private Random random = new Random();
+	private int difficulty = 1;
 
 	PlayingField(GridPane gridPaneMain, Controller controller)
 	{
@@ -40,7 +42,7 @@ public class PlayingField
 				value.setReachableFields(figures);
 				for (Figure check : figures)
 				{
-					if(check.isReachable())
+					if (check.isReachable())
 					{
 						return true;
 					}
@@ -65,7 +67,7 @@ public class PlayingField
 	//moves a figure from a starting to a end position
 	public void moveFigure(Figure source, Figure target)
 	{
-		figures.moveFigure(source,target,this);
+		figures.moveFigure(source, target, this);
 
 		scaleField();
 	}
@@ -79,11 +81,11 @@ public class PlayingField
 		{
 			if (figure.isWhite())
 			{
-				Platform.runLater(()->controller.end(false));
+				Platform.runLater(() -> controller.end(false));
 			}
 			else
 			{
-				Platform.runLater(()->controller.end(true));
+				Platform.runLater(() -> controller.end(true));
 			}
 		}
 	}
@@ -123,40 +125,50 @@ public class PlayingField
 		{
 			figure.setOnAction(e ->
 					{
-						System.out.println(figure.getType());
-						System.out.println(figure.getX() + "|" + figure.getY());
-						System.out.println(figure.getX() + figure.getY() * 8 + "|" + figures.lastIndexOf(figure));
-
-						if (figure.isWhite())
+						//noinspection ConstantConditions
+						if (isWhiteNow||!isWhiteNow && !isBotActive)
 						{
-							System.out.println("W");
-						}
-						else
-						{
-							System.out.println("B");
-						}
-						System.out.println("-----");
+							System.out.println(figure.getType());
+							System.out.println(figure.getX() + "|" + figure.getY());
+							System.out.println(figure.getX() + figure.getY() * 8 + "|" + figures.lastIndexOf(figure));
 
-
-						if (this.getActive() != null && figure.isReachable())
-						{
-							this.moveFigure(this.getActive(), figure);
-							figures.resetReachable();
-							this.setActive(null);
-							this.sortFigures();
-
-							isWhiteNow = !isWhiteNow;
-
-							//bot.start();
-							new Bot(this,random).start();
-						}
-						else
-						{
-							figures.resetReachable();
-							if (isWhiteNow == figure.isWhite())
+							if (figure.isWhite())
 							{
-								this.setActive(figure);
-								figure.setReachableFields(figures);
+								System.out.println("W");
+							}
+							else
+							{
+								System.out.println("B");
+							}
+							System.out.println("-----");
+
+
+							if (this.getActive() != null && figure.isReachable())
+							{
+								this.moveFigure(this.getActive(), figure);
+								this.setActive(null);
+								this.sortFigures();
+
+								isWhiteNow = !isWhiteNow;
+
+								if(!checkIfMovePossible())
+								{
+									controller.end(!isWhiteNow);
+								}
+								else if (isBotActive)
+								{
+									new Bot(this, random, difficulty).start();
+								}
+								figures.resetReachable();
+							}
+							else
+							{
+								figures.resetReachable();
+								if (isWhiteNow == figure.isWhite())
+								{
+									this.setActive(figure);
+									figure.setReachableFields(figures);
+								}
 							}
 						}
 					}
@@ -201,6 +213,21 @@ public class PlayingField
 	public void setWhiteNow(boolean whiteNow)
 	{
 		isWhiteNow = whiteNow;
+	}
+
+	boolean isBotActive()
+	{
+		return isBotActive;
+	}
+
+	void setBotActive(boolean botActive)
+	{
+		isBotActive = botActive;
+	}
+
+	void setDifficulty(int difficulty)
+	{
+		this.difficulty = difficulty;
 	}
 }
 
