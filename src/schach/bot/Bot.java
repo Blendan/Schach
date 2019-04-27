@@ -12,7 +12,7 @@ public class Bot extends Thread
 {
 	private PlayingField playingField;
 	@SuppressWarnings("FieldCanBeLocal")
-	private int roundsToCheck = 1, rounds = 0;
+	private int roundsToCheck, rounds = 0;
 	private ArrayList<Move> moves = new ArrayList<>();
 	private Random random;
 
@@ -153,7 +153,24 @@ public class Bot extends Thread
 						FigureList temp = copyList(figureList);
 						temp.moveFigure(temp.getFigureAt(value), temp.getFigureAt(reachableFigure));
 
-						int tempMove = checkMoves(temp, alpha, beta, !isWhiteNow, i + 1);
+						int tempMove;
+
+
+						if(reachableFigure.getType().equals("King"))
+						{
+							if(reachableFigure.isWhite())
+							{
+								tempMove = Integer.MIN_VALUE;
+							}
+							else
+							{
+								tempMove = Integer.MAX_VALUE;
+							}
+						}
+						else
+						{
+							tempMove = checkMoves(temp, alpha, beta, !isWhiteNow, i + 1);
+						}
 
 						if (isWhiteNow)
 						{
