@@ -9,3 +9,9 @@
   -fx-background-position: center center;
   -fx-background-color: white;
 }
+
+.btn-marked {
+  -fx-background-repeat: stretch;
+  -fx-background-position: center center;
+  -fx-background-color: yellow;
+}

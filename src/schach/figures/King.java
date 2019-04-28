@@ -32,11 +32,15 @@ public class King extends Figure
 
 		for (Figure value : figureList)
 		{
-			if (value.isWhite() != isWhite() && !value.getType().equals("") && !value.getType().equals("King"))
+			if (value.isWhite() != isWhite() && !value.getType().equals(""))
 			{
-				if(value.getType().equals("Peasant"))
+				if (value.getType().equals("Peasant"))
 				{
-					((Peasant)value).setReachableFieldsForKing(figureList);
+					((Peasant) value).setReachableFieldsForKing(figureList);
+				}
+				else if (value.getType().equals("King"))
+				{
+					((King) value).setReachableFieldsForKing(figureList);
 				}
 				else
 				{
@@ -55,7 +59,7 @@ public class King extends Figure
 
 					if (temp != null)
 					{
-						if(!temp.isReachable())
+						if (!temp.isReachable())
 						{
 							if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 							{
@@ -102,7 +106,7 @@ public class King extends Figure
 								if (figureList.getFigureAt(3, y).getType().equals(""))
 								{
 									reachable.add(temp);
-									empty1 = (Empty)temp;
+									empty1 = (Empty) temp;
 									towerLeft = tower;
 								}
 							}
@@ -128,7 +132,7 @@ public class King extends Figure
 								if (figureList.getFigureAt(5, y).getType().equals(""))
 								{
 									reachable.add(temp);
-									empty2 = (Empty)temp;
+									empty2 = (Empty) temp;
 									towerRight = tower;
 								}
 							}
@@ -140,19 +144,116 @@ public class King extends Figure
 
 		figureList.resetReachable();
 
-		if(towerLeft!=null)
+		if (towerLeft != null)
 		{
 			isInRochade = true;
-			empty1.setRochadeTarget(true);
+			if (empty1 != null)
+			{
+				empty1.setRochadeTarget(true);
+			}
 		}
 
-		if(towerRight!=null)
+		if (towerRight != null)
 		{
 			isInRochade = true;
-			empty2.setRochadeTarget(true);
+			if (empty2 != null)
+			{
+				empty2.setRochadeTarget(true);
+			}
 		}
 
-		reachable.forEach(v->v.setReachable(true));
+		reachable.forEach(v -> v.setReachable(true));
+	}
+
+	@Override
+	void setReachableFieldsForKing(FigureList figureList)
+	{
+		towerRight = null;
+		towerLeft = null;
+
+		for (int i = -1; i <= 1; i++)
+		{
+			for (int j = -1; j <= 1; j++)
+			{
+				if (!(i == 0 && j == 0))
+				{
+					Figure temp = figureList.getFigureAt(this.getX() + i, this.getY() + j);
+
+					if (temp != null)
+					{
+						temp.setReachable(true);
+					}
+				}
+			}
+		}
+
+		//Rochade
+
+		int y;
+		if (isWhite())
+		{
+			y = 7;
+		}
+		else
+		{
+			y = 0;
+		}
+
+		if (!isMoved())
+		{
+
+
+			Tower tower;
+			if (figureList.getFigureAt(0, y).getType().equals("Tower"))
+			{
+				tower = (Tower) figureList.getFigureAt(0, y);
+
+				if (!tower.isMoved())
+				{
+					Figure temp = figureList.getFigureAt(2, y);
+
+					if (temp != null)
+					{
+						if (temp.getType().equals("") && !temp.isReachable())
+						{
+							if (figureList.getFigureAt(3, y) != null)
+							{
+								if (figureList.getFigureAt(3, y).getType().equals(""))
+								{
+									temp.setReachable(true);
+									towerLeft = tower;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (figureList.getFigureAt(7, y).getType().equals("Tower"))
+			{
+				tower = (Tower) figureList.getFigureAt(7, y);
+
+				if (!tower.isMoved())
+				{
+					Figure temp = figureList.getFigureAt(6, y);
+
+					if (temp != null)
+					{
+						if (temp.getType().equals("") && !temp.isReachable())
+						{
+							if (figureList.getFigureAt(5, y) != null)
+							{
+								if (figureList.getFigureAt(5, y).getType().equals(""))
+								{
+									temp.setReachable(true);
+									towerRight = tower;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	public void setInRochade(boolean inRochade)

@@ -20,28 +20,52 @@ public class Horse extends Figure
 	@Override
 	public void setReachableFields(FigureList figureList)
 	{
-		for(int i = -2; i <= 2; i += 4)
+		for (int i = -2; i <= 2; i += 4)
 		{
 			for (int j = -1; j <= 1; j += 2)
 			{
-				Figure temp = figureList.getFigureAt(this.getX()+i,this.getY()+j);
+				Figure temp = figureList.getFigureAt(this.getX() + i, this.getY() + j);
 
-				if(temp != null)
+				if (temp != null)
 				{
-					if(temp.isWhite()!=this.isWhite() || temp.getType().equals(""))
+					if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 					{
 						temp.setReachable(true);
 					}
 				}
 
-				temp = figureList.getFigureAt(this.getX()+j,this.getY()+i);
+				temp = figureList.getFigureAt(this.getX() + j, this.getY() + i);
 
-				if(temp != null)
+				if (temp != null)
 				{
-					if(temp.isWhite()!=this.isWhite() || temp.getType().equals(""))
+					if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 					{
 						temp.setReachable(true);
 					}
+				}
+			}
+		}
+	}
+
+	@Override
+	void setReachableFieldsForKing(FigureList figureList)
+	{
+		for (int i = -2; i <= 2; i += 4)
+		{
+			for (int j = -1; j <= 1; j += 2)
+			{
+				Figure temp = figureList.getFigureAt(this.getX() + i, this.getY() + j);
+
+				if (temp != null)
+				{
+					temp.setReachable(true);
+				}
+
+				temp = figureList.getFigureAt(this.getX() + j, this.getY() + i);
+
+				if (temp != null)
+				{
+					temp.setReachable(true);
 				}
 			}
 		}

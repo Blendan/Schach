@@ -22,6 +22,11 @@ public class Empty extends Figure
 		// has no reachable fields
 	}
 
+	@Override
+	void setReachableFieldsForKing(FigureList figureList)
+	{
+	}
+
 	public boolean isRochadeTarget()
 	{
 		return isRochadeTarget;

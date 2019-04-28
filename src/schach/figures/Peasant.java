@@ -24,31 +24,31 @@ public class Peasant extends Figure
 		int y1;
 		int y2;
 
-		if(isWhite())
+		if (isWhite())
 		{
-			y1 = this.getY()-1;
-			y2 = this.getY()-2;
+			y1 = this.getY() - 1;
+			y2 = this.getY() - 2;
 		}
 		else
 		{
-			y1 = this.getY()+1;
-			y2 = this.getY()+2;
+			y1 = this.getY() + 1;
+			y2 = this.getY() + 2;
 		}
 
 		//System.out.println(y1);
 
-		temp = figureList.getFigureAt(this.getX(),y1);
+		temp = figureList.getFigureAt(this.getX(), y1);
 
-		if(temp!=null)
+		if (temp != null)
 		{
 			if (temp.getType().equals(""))
 			{
 				figureList.getFigureAt(this.getX(), y1).setReachable(true);
 
-				temp = figureList.getFigureAt(this.getX(),y2);
-				if(temp!=null)
+				temp = figureList.getFigureAt(this.getX(), y2);
+				if (temp != null)
 				{
-					if (!isMoved() &&  temp.getType().equals(""))
+					if (!isMoved() && temp.getType().equals(""))
 					{
 						figureList.getFigureAt(this.getX(), y2).setReachable(true);
 					}
@@ -57,11 +57,10 @@ public class Peasant extends Figure
 		}
 
 
-
-		for(int i = -1; i <= 1; i += 2)
+		for (int i = -1; i <= 1; i += 2)
 		{
-			temp = figureList.getFigureAt(this.getX()+i,y1);
-			if(temp != null)
+			temp = figureList.getFigureAt(this.getX() + i, y1);
+			if (temp != null)
 			{
 				if (!temp.getType().equals("") && temp.isWhite() != isWhite())
 				{
@@ -74,29 +73,27 @@ public class Peasant extends Figure
 
 	}
 
+	@Override
 	void setReachableFieldsForKing(FigureList figureList)
 	{
 		Figure temp;
 		int y;
 
-		if(isWhite())
+		if (isWhite())
 		{
-			y = this.getY()-1;
+			y = this.getY() - 1;
 		}
 		else
 		{
-			y = this.getY()+1;
+			y = this.getY() + 1;
 		}
 
-		for(int i = -1; i <= 1; i += 2)
+		for (int i = -1; i <= 1; i += 2)
 		{
-			temp = figureList.getFigureAt(this.getX()+i,y);
-			if(temp != null)
+			temp = figureList.getFigureAt(this.getX() + i, y);
+			if (temp != null)
 			{
-				if (temp.getType().equals(""))
-				{
-					temp.setReachable(true);
-				}
+				temp.setReachable(true);
 			}
 		}
 	}

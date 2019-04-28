@@ -12,7 +12,7 @@ public abstract class Figure extends Button
 	private int x, y;
 	private String type = "";
 	private int value = 0;
-	private boolean isReachable = false, isWhite, isMoved = false; //isWhite because isBlack would be racist
+	private boolean isReachable = false, isWhite, isMoved = false , isMarked = false; //isWhite because isBlack would be racist
 	private Text text = new Text();
 	private Figure original;
 
@@ -158,4 +158,22 @@ public abstract class Figure extends Button
 	{
 		return original;
 	}
+
+	public boolean isMarked()
+	{
+		return isMarked;
+	}
+
+	public void setMarked(boolean marked)
+	{
+		isMarked = marked;
+
+		if(isMarked)
+		{
+			getStyleClass().clear();
+			getStyleClass().add("btn-marked");
+		}
+	}
+
+	abstract void setReachableFieldsForKing(FigureList figureList);
 }

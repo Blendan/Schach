@@ -65,11 +65,13 @@ public class PlayingField
 	}
 
 	//moves a figure from a starting to a end position
-	public void moveFigure(Figure source, Figure target)
+	public Figure moveFigure(Figure source, Figure target)
 	{
-		figures.moveFigure(source, target, this);
+		Figure figure = figures.moveFigure(source, target, this);
 
 		scaleField();
+
+		return figure;
 	}
 
 	void removeFigure(Figure figure)

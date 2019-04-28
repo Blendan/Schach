@@ -1,7 +1,6 @@
 package schach.figures;
 
 import schach.FigureList;
-import schach.PlayingField;
 
 public class Queen extends Figure
 {
@@ -21,32 +20,62 @@ public class Queen extends Figure
 	@Override
 	public void setReachableFields(FigureList figureList)
 	{
-		lookInDirection(this.getX(),this.getY(),1,1, figureList);
-		lookInDirection(this.getX(),this.getY(),-1,-1, figureList);
-		lookInDirection(this.getX(),this.getY(),1,-1, figureList);
-		lookInDirection(this.getX(),this.getY(),-1,1, figureList);
+		lookInDirection(this.getX(), this.getY(), 1, 1, figureList);
+		lookInDirection(this.getX(), this.getY(), -1, -1, figureList);
+		lookInDirection(this.getX(), this.getY(), 1, -1, figureList);
+		lookInDirection(this.getX(), this.getY(), -1, 1, figureList);
 
-		lookInDirection(this.getX(),this.getY(),0,1, figureList);
-		lookInDirection(this.getX(),this.getY(),0,-1, figureList);
-		lookInDirection(this.getX(),this.getY(),1,0, figureList);
-		lookInDirection(this.getX(),this.getY(),-1,0, figureList);
+		lookInDirection(this.getX(), this.getY(), 0, 1, figureList);
+		lookInDirection(this.getX(), this.getY(), 0, -1, figureList);
+		lookInDirection(this.getX(), this.getY(), 1, 0, figureList);
+		lookInDirection(this.getX(), this.getY(), -1, 0, figureList);
+	}
+
+	@Override
+	void setReachableFieldsForKing(FigureList figureList)
+	{
+		lookInDirectionForKing(this.getX(), this.getY(), 1, 1, figureList);
+		lookInDirectionForKing(this.getX(), this.getY(), -1, -1, figureList);
+		lookInDirectionForKing(this.getX(), this.getY(), 1, -1, figureList);
+		lookInDirectionForKing(this.getX(), this.getY(), -1, 1, figureList);
+
+		lookInDirectionForKing(this.getX(), this.getY(), 0, 1, figureList);
+		lookInDirectionForKing(this.getX(), this.getY(), 0, -1, figureList);
+		lookInDirectionForKing(this.getX(), this.getY(), 1, 0, figureList);
+		lookInDirectionForKing(this.getX(), this.getY(), -1, 0, figureList);
 	}
 
 	private void lookInDirection(int x, int y, int plusX, int plusY, FigureList figureList)
 	{
-		int newX = x+plusX, newY = y+plusY;
-		Figure temp = figureList.getFigureAt(newX,newY);
+		int newX = x + plusX, newY = y + plusY;
+		Figure temp = figureList.getFigureAt(newX, newY);
 
-		if(temp != null)
+		if (temp != null)
 		{
-			if(temp.isWhite()!=this.isWhite() || temp.getType().equals(""))
+			if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 			{
 				temp.setReachable(true);
 
-				if(temp.getType().equals(""))
+				if (temp.getType().equals(""))
 				{
 					lookInDirection(newX, newY, plusX, plusY, figureList);
 				}
+			}
+		}
+	}
+
+	private void lookInDirectionForKing(int x, int y, int plusX, int plusY, FigureList figureList)
+	{
+		int newX = x + plusX, newY = y + plusY;
+		Figure temp = figureList.getFigureAt(newX, newY);
+
+		if (temp != null)
+		{
+			temp.setReachable(true);
+
+			if (temp.getType().equals(""))
+			{
+				lookInDirection(newX, newY, plusX, plusY, figureList);
 			}
 		}
 	}

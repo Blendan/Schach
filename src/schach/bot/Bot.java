@@ -59,9 +59,15 @@ public class Bot extends Thread
 		return temp;
 	}
 
+	private void removeMarked()
+	{
+		playingField.getFigures().forEach(v->v.setMarked(false));
+	}
+
 	@Override
 	public void run()
 	{
+		removeMarked();
 		FigureList figureList = copyList(playingField.getFigures());
 
 		for (Figure value : figureList)
@@ -115,13 +121,14 @@ public class Bot extends Thread
 			//System.out.println(value.getValue());
 		}
 
-		System.out.println("\n"+rounds);
+		System.out.println("\n" + rounds);
 		System.out.println(moves.size() + "|" + bestValue);
 
 		int randomInt = random.nextInt(bestMoves.size());
 		Figure source = bestMoves.get(randomInt).getSource().getOriginal();
 		Figure target = bestMoves.get(randomInt).getTarget().getOriginal();
-		playingField.moveFigure(source, target);
+		playingField.moveFigure(source, target).setMarked(true);
+		source.setMarked(true);
 
 		System.out.println(source.getX() + "|" + source.getY() + "|" + source.getType());
 		System.out.println(target.getX() + "|" + target.getY() + "|" + target.getType());
@@ -130,6 +137,18 @@ public class Bot extends Thread
 
 	private int checkMoves(FigureList figureList, int alpha, int beta, boolean isWhiteNow, int i)
 	{
+		if (beta <= alpha)
+		{
+			if (isWhiteNow)
+			{
+				return alpha;
+			}
+			else
+			{
+				return beta;
+			}
+		}
+
 		if (i < roundsToCheck)
 		{
 			int bestMove;
@@ -156,9 +175,9 @@ public class Bot extends Thread
 						int tempMove;
 
 
-						if(reachableFigure.getType().equals("King"))
+						if (reachableFigure.getType().equals("King"))
 						{
-							if(reachableFigure.isWhite())
+							if (reachableFigure.isWhite())
 							{
 								tempMove = Integer.MIN_VALUE;
 							}

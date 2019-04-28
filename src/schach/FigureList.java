@@ -64,13 +64,16 @@ public class FigureList extends ArrayList<Figure>
 
 			}
 
-			if (isBlack)
+			if(!value.isMarked())
 			{
-				value.getStyleClass().add("btn-black");
-			}
-			else
-			{
-				value.getStyleClass().add("btn-white");
+				if (isBlack)
+				{
+					value.getStyleClass().add("btn-black");
+				}
+				else
+				{
+					value.getStyleClass().add("btn-white");
+				}
 			}
 
 			isBlack = !isBlack;
@@ -79,7 +82,7 @@ public class FigureList extends ArrayList<Figure>
 
 	public Figure getFigureAt(int x, int y)
 	{
-		if (x + y * 8 < this.size() && x + y * 8 >= 0 && x < 8 && y < 8 && x >= 0 && y >= 0)
+		if (x + y * 8 < this.size() && x < 8 && y < 8 && x >= 0 && y >= 0)
 		{
 			return this.get(x + y * 8);
 		}
@@ -94,7 +97,7 @@ public class FigureList extends ArrayList<Figure>
 		int x = figure.getX();
 		int y = figure.getY();
 
-		if (x + y * 8 < this.size() && x + y * 8 >= 0 && x < 8 && y < 8 && x >= 0 && y >= 0)
+		if (x + y * 8 < this.size() && x < 8 && y < 8 && x >= 0 && y >= 0)
 		{
 			return this.get(x + y * 8);
 		}
@@ -183,7 +186,7 @@ public class FigureList extends ArrayList<Figure>
 		sort();
 	}
 
-	void moveFigure(Figure source, Figure target, PlayingField playingField)
+	Figure moveFigure(Figure source, Figure target, PlayingField playingField)
 	{
 		int x = source.getX();
 		int y = source.getY();
@@ -243,6 +246,8 @@ public class FigureList extends ArrayList<Figure>
 		resetReachable();
 		sort();
 		colorFields();
+
+		return empty;
 	}
 
 	public void resetReachable()

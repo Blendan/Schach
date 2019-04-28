@@ -26,6 +26,15 @@ public class Runner extends Figure
 		lookInDirection(this.getX(),this.getY(),-1,1, figureList);
 	}
 
+	@Override
+	void setReachableFieldsForKing(FigureList figureList)
+	{
+		lookInDirectionForKing(this.getX(),this.getY(),1,1, figureList);
+		lookInDirectionForKing(this.getX(),this.getY(),-1,-1, figureList);
+		lookInDirectionForKing(this.getX(),this.getY(),1,-1, figureList);
+		lookInDirectionForKing(this.getX(),this.getY(),-1,1, figureList);
+	}
+
 	private void lookInDirection(int x, int y, int plusX, int plusY, FigureList figureList)
 	{
 		int newX = x+plusX, newY = y+plusY;
@@ -41,6 +50,22 @@ public class Runner extends Figure
 				{
 					lookInDirection(newX, newY, plusX, plusY, figureList);
 				}
+			}
+		}
+	}
+
+	private void lookInDirectionForKing(int x, int y, int plusX, int plusY, FigureList figureList)
+	{
+		int newX = x + plusX, newY = y + plusY;
+		Figure temp = figureList.getFigureAt(newX, newY);
+
+		if (temp != null)
+		{
+			temp.setReachable(true);
+
+			if (temp.getType().equals(""))
+			{
+				lookInDirection(newX, newY, plusX, plusY, figureList);
 			}
 		}
 	}
