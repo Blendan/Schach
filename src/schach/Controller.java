@@ -23,6 +23,9 @@ public class Controller implements Initializable
 	@FXML
 	private Button btnBot;
 
+	@FXML
+	private Button btnReset;
+
 	private PlayingField playingField;
 
 	@Override
@@ -30,7 +33,7 @@ public class Controller implements Initializable
 	{
 		playingField = new PlayingField(gridPaneMain, this);
 
-		for(int i = 1; i <= 3; i ++)
+		for(int i = 1; i <= 4; i ++)
 		{
 			comboBoxDifficulty.getItems().add(i+"");
 		}
@@ -41,6 +44,8 @@ public class Controller implements Initializable
 		comboBoxDifficulty.setOnAction(e->setDifficulty());
 
 		placeFigures();
+
+		btnReset.setOnAction(e->placeFigures());
 	}
 
 	private void setDifficulty()
@@ -67,7 +72,10 @@ public class Controller implements Initializable
 
 	private void placeFigures()
 	{
+		playingField.setWhiteNow(true);
+		playingField.getFigures().clear();
 
+		gridPaneMain.getChildren().clear();
 		for (int i = 0; i < 8; i++)
 		{
 			for (int j = 0; j < 8; j++)

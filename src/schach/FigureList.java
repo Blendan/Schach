@@ -161,6 +161,7 @@ public class FigureList extends ArrayList<Figure>
 
 		if (source.getType().equals("King"))
 		{
+			sort();
 			King king = (King) source;
 			if (king.isInRochade())
 			{
@@ -168,7 +169,7 @@ public class FigureList extends ArrayList<Figure>
 				{
 					if (((Empty) target).isRochadeTarget())
 					{
-						if (target.getX() == 2 && king.getTowerRight() != null)
+						if (target.getX() == 2 && king.getTowerLeft() != null)
 						{
 							moveFigure(king.getTowerLeft(), getFigureAt(3, y));
 						}
@@ -220,8 +221,10 @@ public class FigureList extends ArrayList<Figure>
 		Figure empty = new Empty();
 		playingField.setFigureToCoordinate(x, y, empty);
 
+		//rochade
 		if (source.getType().equals("King"))
 		{
+			sort();
 			King king = (King) source;
 			if (king.isInRochade())
 			{
@@ -229,7 +232,7 @@ public class FigureList extends ArrayList<Figure>
 				{
 					if (((Empty) target).isRochadeTarget())
 					{
-						if (target.getX() == 2 && king.getTowerRight() != null)
+						if (target.getX() == 2 && king.getTowerLeft() != null)
 						{
 							moveFigure(king.getTowerLeft(), getFigureAt(3, y),playingField);
 						}

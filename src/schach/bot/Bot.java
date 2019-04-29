@@ -69,6 +69,8 @@ public class Bot extends Thread
 	{
 		removeMarked();
 		FigureList figureList = copyList(playingField.getFigures());
+		ArrayList<Thread> threads = new ArrayList<>();
+		int alpha = Integer.MIN_VALUE,beta = Integer.MAX_VALUE;
 
 		for (Figure value : figureList)
 		{
@@ -83,14 +85,43 @@ public class Bot extends Thread
 
 						temp.moveFigure(value, reachableFigure);
 
-						moves.add(new Move(value, reachableFigure, checkMoves(temp, Integer.MIN_VALUE, Integer.MAX_VALUE, true, 1)));
+						Move tempMove = new Move(value, reachableFigure, checkMoves(temp, Integer.MIN_VALUE, beta, true, 1));
+
+						moves.add(tempMove);
+
+						if (beta > tempMove.getValue())
+						{
+							beta = tempMove.getValue();
+						}
+
+						//Thread tempThread = new Thread(()->moves.add(new Move(value, reachableFigure, checkMoves(temp, Integer.MIN_VALUE, Integer.MAX_VALUE, true, 1))));
+
+						//threads.add(tempThread);
+						//tempThread.start();
 					}
 				}
 				figureList.resetReachable();
 			}
 		}
 
+		waitFor(threads);
+
 		Platform.runLater(this::makeBestMove);
+	}
+
+	private void waitFor(ArrayList<Thread> threads)
+	{
+		for (Thread thread : threads)
+		{
+			try
+			{
+				thread.join();
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void makeBestMove()
@@ -137,18 +168,6 @@ public class Bot extends Thread
 
 	private int checkMoves(FigureList figureList, int alpha, int beta, boolean isWhiteNow, int i)
 	{
-		if (beta <= alpha)
-		{
-			if (isWhiteNow)
-			{
-				return alpha;
-			}
-			else
-			{
-				return beta;
-			}
-		}
-
 		if (i < roundsToCheck)
 		{
 			int bestMove;
@@ -196,9 +215,9 @@ public class Bot extends Thread
 							if (bestMove < tempMove)
 							{
 								bestMove = tempMove;
-								if (beta < bestMove)
+								if (alpha < bestMove)
 								{
-									beta = bestMove;
+									alpha = bestMove;
 								}
 							}
 						}

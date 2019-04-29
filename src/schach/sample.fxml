@@ -26,6 +26,8 @@
             </VBox.margin>
          </Label>
          <ComboBox prefWidth="150.0" fx:id="comboBoxDifficulty"/>
+         <Button mnemonicParsing="false" text="Reset" fx:id="btnReset"/>
+
       </VBox>
    </right>
 </BorderPane>
