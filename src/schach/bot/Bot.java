@@ -5,6 +5,7 @@ import schach.FigureList;
 import schach.PlayingField;
 import schach.figures.*;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -69,8 +70,8 @@ public class Bot extends Thread
 	{
 		removeMarked();
 		FigureList figureList = copyList(playingField.getFigures());
-		ArrayList<Thread> threads = new ArrayList<>();
-		int alpha = Integer.MIN_VALUE,beta = Integer.MAX_VALUE;
+		int beta = Integer.MAX_VALUE;
+		Instant then = Instant.now();
 
 		for (Figure value : figureList)
 		{
@@ -93,35 +94,16 @@ public class Bot extends Thread
 						{
 							beta = tempMove.getValue();
 						}
-
-						//Thread tempThread = new Thread(()->moves.add(new Move(value, reachableFigure, checkMoves(temp, Integer.MIN_VALUE, Integer.MAX_VALUE, true, 1))));
-
-						//threads.add(tempThread);
-						//tempThread.start();
 					}
 				}
 				figureList.resetReachable();
 			}
 		}
 
-		waitFor(threads);
+		System.out.println("##############\n"+then.getEpochSecond()+"\n"+Instant.now().toEpochMilli()+"\n##############");
+
 
 		Platform.runLater(this::makeBestMove);
-	}
-
-	private void waitFor(ArrayList<Thread> threads)
-	{
-		for (Thread thread : threads)
-		{
-			try
-			{
-				thread.join();
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
 	}
 
 	private void makeBestMove()
