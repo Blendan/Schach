@@ -17,13 +17,19 @@ public class Empty extends Figure
 	}
 
 	@Override
+	public void setReachableFieldsForBot(FigureList figureList)
+	{
+
+	}
+
+	@Override
 	public void setReachableFields(FigureList playingField)
 	{
 		// has no reachable fields
 	}
 
 	@Override
-	void setReachableFieldsForKing(FigureList figureList)
+	public void setReachableFieldsForKing(FigureList figureList)
 	{
 	}
 

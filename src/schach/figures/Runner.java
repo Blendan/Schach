@@ -18,7 +18,7 @@ public class Runner extends Figure
 	}
 
 	@Override
-	public void setReachableFields(FigureList figureList)
+	public void setReachableFieldsForBot(FigureList figureList)
 	{
 		lookInDirection(this.getX(),this.getY(),1,1, figureList);
 		lookInDirection(this.getX(),this.getY(),-1,-1, figureList);
@@ -27,7 +27,17 @@ public class Runner extends Figure
 	}
 
 	@Override
-	void setReachableFieldsForKing(FigureList figureList)
+	public void setReachableFields(FigureList figureList)
+	{
+		lookInDirection(this.getX(),this.getY(),1,1, figureList);
+		lookInDirection(this.getX(),this.getY(),-1,-1, figureList);
+		lookInDirection(this.getX(),this.getY(),1,-1, figureList);
+		lookInDirection(this.getX(),this.getY(),-1,1, figureList);
+		checkForBadMove(figureList);
+	}
+
+	@Override
+	public void setReachableFieldsForKing(FigureList figureList)
 	{
 		lookInDirectionForKing(this.getX(),this.getY(),1,1, figureList);
 		lookInDirectionForKing(this.getX(),this.getY(),-1,-1, figureList);
@@ -37,21 +47,23 @@ public class Runner extends Figure
 
 	private void lookInDirection(int x, int y, int plusX, int plusY, FigureList figureList)
 	{
-		int newX = x+plusX, newY = y+plusY;
-		Figure temp = figureList.getFigureAt(newX,newY);
+		int newX = x + plusX, newY = y + plusY;
+		Figure temp = figureList.getFigureAt(newX, newY);
 
-		if(temp != null)
+		if (temp != null)
 		{
-			if(temp.isWhite()!=this.isWhite() || temp.getType().equals(""))
+			if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 			{
 				temp.setReachable(true);
+				getCanReach().add(temp);
 
-				if(temp.getType().equals(""))
+				if (temp.getType().equals(""))
 				{
 					lookInDirection(newX, newY, plusX, plusY, figureList);
 				}
 			}
 		}
+
 	}
 
 	private void lookInDirectionForKing(int x, int y, int plusX, int plusY, FigureList figureList)
@@ -62,6 +74,7 @@ public class Runner extends Figure
 		if (temp != null)
 		{
 			temp.setReachable(true);
+			getCanReach().add(temp);
 
 			if (temp.getType().equals(""))
 			{

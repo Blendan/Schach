@@ -253,6 +253,89 @@ public class FigureList extends ArrayList<Figure>
 		return empty;
 	}
 
+	public boolean isInCheck(boolean isWhiteNow)
+	{
+		this.resetReachable();
+		Figure king = null;
+		for (Figure value: this)
+		{
+			if(value.isWhite()!=isWhiteNow)
+			{
+				value.setReachableFieldsForKing(this);
+			}
+			else if(value.getType().equals("King"))
+			{
+				king = value;
+			}
+		}
+
+		if(king!=null)
+		{
+			return king.isReachable();
+		}
+		else
+		{
+			return true;
+		}
+
+
+	}
+
+	int getGameState()
+	{
+		int gameState = 0;
+
+		for (Figure value :this)
+		{
+			if(value.isWhite())
+			{
+				gameState += value.getValue();
+			}
+			else
+			{
+				gameState -= value.getValue();
+			}
+		}
+
+		return gameState;
+	}
+
+	public FigureList copyList()
+	{
+		FigureList temp = new FigureList();
+
+		for (Figure value : this)
+		{
+			switch (value.getType())
+			{
+				case "":
+					temp.add(new Empty(value));
+					break;
+				case "King":
+					temp.add(new King(value));
+					break;
+				case "Queen":
+					temp.add(new Queen(value));
+					break;
+				case "Runner":
+					temp.add(new Runner(value));
+					break;
+				case "Horse":
+					temp.add(new Horse(value));
+					break;
+				case "Tower":
+					temp.add(new Tower(value));
+					break;
+				case "Peasant":
+					temp.add(new Peasant(value));
+					break;
+			}
+
+		}
+
+		return temp;
+	}
+
 	public void resetReachable()
 	{
 		for (Figure value : this)

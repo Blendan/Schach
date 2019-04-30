@@ -18,6 +18,62 @@ public class Peasant extends Figure
 	}
 
 	@Override
+	public void setReachableFieldsForBot(FigureList figureList)
+	{
+		Figure temp;
+		int y1;
+		int y2;
+
+		if (isWhite())
+		{
+			y1 = this.getY() - 1;
+			y2 = this.getY() - 2;
+		}
+		else
+		{
+			y1 = this.getY() + 1;
+			y2 = this.getY() + 2;
+		}
+
+		//System.out.println(y1);
+
+		temp = figureList.getFigureAt(this.getX(), y1);
+
+		if (temp != null)
+		{
+			if (temp.getType().equals(""))
+			{
+				temp.setReachable(true);
+				getCanReach().add(temp);
+
+				temp = figureList.getFigureAt(this.getX(), y2);
+				if (temp != null)
+				{
+					if (!isMoved() && temp.getType().equals(""))
+					{
+						temp.setReachable(true);
+						getCanReach().add(temp);
+					}
+				}
+			}
+		}
+
+
+		for (int i = -1; i <= 1; i += 2)
+		{
+			temp = figureList.getFigureAt(this.getX() + i, y1);
+			if (temp != null)
+			{
+				if (!temp.getType().equals("") && temp.isWhite() != isWhite())
+				{
+					temp.setReachable(true);
+					getCanReach().add(temp);
+				}
+			}
+		}
+	}
+
+	@Override
 	public void setReachableFields(FigureList figureList)
 	{
 		Figure temp;
@@ -43,14 +99,16 @@ public class Peasant extends Figure
 		{
 			if (temp.getType().equals(""))
 			{
-				figureList.getFigureAt(this.getX(), y1).setReachable(true);
+				temp.setReachable(true);
+				getCanReach().add(temp);
 
 				temp = figureList.getFigureAt(this.getX(), y2);
 				if (temp != null)
 				{
 					if (!isMoved() && temp.getType().equals(""))
 					{
-						figureList.getFigureAt(this.getX(), y2).setReachable(true);
+						temp.setReachable(true);
+						getCanReach().add(temp);
 					}
 				}
 			}
@@ -65,16 +123,16 @@ public class Peasant extends Figure
 				if (!temp.getType().equals("") && temp.isWhite() != isWhite())
 				{
 					temp.setReachable(true);
+					getCanReach().add(temp);
 				}
 			}
 		}
 
-		//TODO stuff that happens when end zone is reached
-
+		checkForBadMove(figureList);
 	}
 
 	@Override
-	void setReachableFieldsForKing(FigureList figureList)
+	public void setReachableFieldsForKing(FigureList figureList)
 	{
 		Figure temp;
 		int y;

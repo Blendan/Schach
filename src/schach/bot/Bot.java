@@ -24,42 +24,6 @@ public class Bot extends Thread
 		this.playingField = playingField;
 	}
 
-	private FigureList copyList(FigureList figureList)
-	{
-		FigureList temp = new FigureList();
-
-		for (Figure value : figureList)
-		{
-			switch (value.getType())
-			{
-				case "":
-					temp.add(new Empty(value));
-					break;
-				case "King":
-					temp.add(new King(value));
-					break;
-				case "Queen":
-					temp.add(new Queen(value));
-					break;
-				case "Runner":
-					temp.add(new Runner(value));
-					break;
-				case "Horse":
-					temp.add(new Horse(value));
-					break;
-				case "Tower":
-					temp.add(new Tower(value));
-					break;
-				case "Peasant":
-					temp.add(new Peasant(value));
-					break;
-			}
-
-		}
-
-		return temp;
-	}
-
 	private void removeMarked()
 	{
 		playingField.getFigures().forEach(v->v.setMarked(false));
@@ -69,7 +33,7 @@ public class Bot extends Thread
 	public void run()
 	{
 		removeMarked();
-		FigureList figureList = copyList(playingField.getFigures());
+		FigureList figureList = playingField.getFigures().copyList();
 		int beta = Integer.MAX_VALUE;
 		Instant then = Instant.now();
 
@@ -77,12 +41,12 @@ public class Bot extends Thread
 		{
 			if (!value.isWhite() && !value.getType().equals(""))
 			{
-				value.setReachableFields(figureList);
-				for (Figure reachableFigure : figureList)
+				value.setReachableFieldsForBot(figureList);
+				for (Figure reachableFigure : value.getCanReach())
 				{
 					if (reachableFigure.isReachable())
 					{
-						FigureList temp = copyList(figureList);
+						FigureList temp = figureList.copyList();
 
 						temp.moveFigure(value, reachableFigure);
 
@@ -165,12 +129,12 @@ public class Bot extends Thread
 
 			for (Figure value : figureList)
 			{
-				value.setReachableFields(figureList);
-				for (Figure reachableFigure : figureList)
+				value.setReachableFieldsForBot(figureList);
+				for (Figure reachableFigure : value.getCanReach())
 				{
 					if (reachableFigure.isReachable())
 					{
-						FigureList temp = copyList(figureList);
+						FigureList temp = figureList.copyList();
 						temp.moveFigure(temp.getFigureAt(value), temp.getFigureAt(reachableFigure));
 
 						int tempMove;

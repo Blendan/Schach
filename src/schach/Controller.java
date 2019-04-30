@@ -1,10 +1,12 @@
 package schach;
 
 import fxPopup.FxInfo;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import schach.figures.*;
 
@@ -13,6 +15,9 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable
 {
+
+	@FXML
+	private Label lblGameState;
 
 	@FXML
 	private ComboBox<String> comboBoxDifficulty;
@@ -33,7 +38,7 @@ public class Controller implements Initializable
 	{
 		playingField = new PlayingField(gridPaneMain, this);
 
-		for(int i = 1; i <= 5; i ++)
+		for(int i = 1; i <= 4; i ++)
 		{
 			comboBoxDifficulty.getItems().add(i+"");
 		}
@@ -140,5 +145,10 @@ public class Controller implements Initializable
 		}
 
 		fxInfo.show();
+	}
+
+	void setGameState(int state)
+	{
+		Platform.runLater(()->lblGameState.setText(Integer.toString(state)));
 	}
 }

@@ -26,7 +26,17 @@
             </VBox.margin>
          </Label>
          <ComboBox prefWidth="150.0" fx:id="comboBoxDifficulty"/>
-         <Button mnemonicParsing="false" text="Reset" fx:id="btnReset"/>
+         <Button mnemonicParsing="false" text="Reset" fx:id="btnReset">
+               <VBox.margin>
+                  <Insets top="5.0"/>
+               </VBox.margin>
+         </Button>
+         <Label text="Game State:">
+            <VBox.margin>
+               <Insets top="5.0"/>
+            </VBox.margin>
+         </Label>
+         <Label text="0" fx:id="lblGameState"/>
 
       </VBox>
    </right>

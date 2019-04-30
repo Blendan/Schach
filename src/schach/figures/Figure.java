@@ -7,6 +7,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import schach.FigureList;
 
+import java.util.ArrayList;
+
 public abstract class Figure extends Button
 {
 	private int x, y;
@@ -15,6 +17,7 @@ public abstract class Figure extends Button
 	private boolean isReachable = false, isWhite, isMoved = false , isMarked = false; //isWhite because isBlack would be racist
 	private Text text = new Text();
 	private Figure original;
+	private ArrayList<Figure> canReach = new ArrayList<>();
 
 	public Figure()
 	{
@@ -57,6 +60,30 @@ public abstract class Figure extends Button
 				text.setFill(Color.BLACK);
 			}
 		}
+	}
+
+	public ArrayList<Figure> getCanReach()
+	{
+		return canReach;
+	}
+
+	void checkForBadMove(FigureList figureList)
+	{
+		ArrayList<Figure> toRemove = new ArrayList<>();
+		for(Figure value : canReach)
+		{
+			FigureList temp = figureList.copyList();
+			temp.resetReachable();
+
+			temp.moveFigure(temp.getFigureAt(this),temp.getFigureAt(value));
+			if(temp.isInCheck(isWhite))
+			{
+				value.setReachable(false);
+				toRemove.add(value);
+			}
+		}
+
+		canReach.removeAll(toRemove);
 	}
 
 	public String getType()
@@ -133,6 +160,8 @@ public abstract class Figure extends Button
 		return y;
 	}
 
+	public abstract void setReachableFieldsForBot(FigureList figureList);
+
 	public abstract void setReachableFields(FigureList figureList);
 
 	public void setReachable(boolean reachable)
@@ -175,5 +204,5 @@ public abstract class Figure extends Button
 		}
 	}
 
-	abstract void setReachableFieldsForKing(FigureList figureList);
+	abstract public void setReachableFieldsForKing(FigureList figureList);
 }

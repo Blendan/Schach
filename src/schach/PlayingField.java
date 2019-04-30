@@ -40,7 +40,7 @@ public class PlayingField
 			if (value.isWhite() == isWhiteNow && !value.getType().equals(""))
 			{
 				value.setReachableFields(figures);
-				for (Figure check : figures)
+				for (Figure check : value.getCanReach())
 				{
 					if (check.isReachable())
 					{
@@ -48,6 +48,7 @@ public class PlayingField
 					}
 				}
 				figures.resetReachable();
+				value.getCanReach().clear();
 			}
 		}
 		return false;
@@ -151,7 +152,7 @@ public class PlayingField
 								this.setActive(null);
 								this.sortFigures();
 
-								isWhiteNow = !isWhiteNow;
+								setWhiteNow(!isWhiteNow);
 
 								if(!checkIfMovePossible())
 								{
@@ -161,7 +162,9 @@ public class PlayingField
 								{
 									new Bot(this, random, difficulty).start();
 								}
+
 								figures.resetReachable();
+
 							}
 							else
 							{
@@ -215,6 +218,7 @@ public class PlayingField
 	public void setWhiteNow(boolean whiteNow)
 	{
 		isWhiteNow = whiteNow;
+		controller.setGameState(figures.getGameState());
 	}
 
 	boolean isBotActive()

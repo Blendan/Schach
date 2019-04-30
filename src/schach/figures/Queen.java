@@ -18,7 +18,7 @@ public class Queen extends Figure
 	}
 
 	@Override
-	public void setReachableFields(FigureList figureList)
+	public void setReachableFieldsForBot(FigureList figureList)
 	{
 		lookInDirection(this.getX(), this.getY(), 1, 1, figureList);
 		lookInDirection(this.getX(), this.getY(), -1, -1, figureList);
@@ -32,7 +32,22 @@ public class Queen extends Figure
 	}
 
 	@Override
-	void setReachableFieldsForKing(FigureList figureList)
+	public void setReachableFields(FigureList figureList)
+	{
+		lookInDirection(this.getX(), this.getY(), 1, 1, figureList);
+		lookInDirection(this.getX(), this.getY(), -1, -1, figureList);
+		lookInDirection(this.getX(), this.getY(), 1, -1, figureList);
+		lookInDirection(this.getX(), this.getY(), -1, 1, figureList);
+
+		lookInDirection(this.getX(), this.getY(), 0, 1, figureList);
+		lookInDirection(this.getX(), this.getY(), 0, -1, figureList);
+		lookInDirection(this.getX(), this.getY(), 1, 0, figureList);
+		lookInDirection(this.getX(), this.getY(), -1, 0, figureList);
+		checkForBadMove(figureList);
+	}
+
+	@Override
+	public void setReachableFieldsForKing(FigureList figureList)
 	{
 		lookInDirectionForKing(this.getX(), this.getY(), 1, 1, figureList);
 		lookInDirectionForKing(this.getX(), this.getY(), -1, -1, figureList);
@@ -55,6 +70,7 @@ public class Queen extends Figure
 			if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 			{
 				temp.setReachable(true);
+				getCanReach().add(temp);
 
 				if (temp.getType().equals(""))
 				{
@@ -72,6 +88,7 @@ public class Queen extends Figure
 		if (temp != null)
 		{
 			temp.setReachable(true);
+			getCanReach().add(temp);
 
 			if (temp.getType().equals(""))
 			{
