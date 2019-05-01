@@ -120,7 +120,17 @@ public class Bot extends Thread
 
 		System.out.println(source.getX() + "|" + source.getY() + "|" + source.getType());
 		System.out.println(target.getX() + "|" + target.getY() + "|" + target.getType());
+
 		playingField.setWhiteNow(true);
+
+		if(!playingField.checkIfMovePossible())
+		{
+			playingField.getController().end(false);
+		}
+		else
+		{
+			playingField.checkDraw(target);
+		}
 	}
 
 	private int checkMoves(FigureList figureList, int alpha, int beta, boolean isWhiteNow, int i)

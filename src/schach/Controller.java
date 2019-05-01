@@ -130,8 +130,9 @@ public class Controller implements Initializable
 		playingField.scaleField();
 	}
 
-	void end(boolean isWinnerWhite)
+	public void end(boolean isWinnerWhite)
 	{
+		stopGame();
 		FxInfo fxInfo = new FxInfo();
 		fxInfo.setTitle("Someone Won");
 
@@ -150,5 +151,19 @@ public class Controller implements Initializable
 	void setGameState(int state)
 	{
 		Platform.runLater(()->lblGameState.setText(Integer.toString(state)));
+	}
+
+	void end()
+	{
+		stopGame();
+		FxInfo fxInfo = new FxInfo();
+		fxInfo.setTitle("Someone Won");
+		fxInfo.setInfo("Draw");
+		fxInfo.show();
+	}
+
+	private void stopGame()
+	{
+		playingField.getFigures().forEach(v->v.setOnAction(e->{}));
 	}
 }

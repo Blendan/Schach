@@ -20,6 +20,7 @@ public class PlayingField
 	private boolean isWhiteNow = true;
 	private Random random = new Random();
 	private int difficulty = 1;
+	private int roundWithoutStuff = 0;
 
 	PlayingField(GridPane gridPaneMain, Controller controller)
 	{
@@ -33,7 +34,7 @@ public class PlayingField
 		makeGrid();
 	}
 
-	private boolean checkIfMovePossible()
+	public boolean checkIfMovePossible()
 	{
 		for (Figure value : figures)
 		{
@@ -129,7 +130,7 @@ public class PlayingField
 			figure.setOnAction(e ->
 					{
 						//noinspection ConstantConditions
-						if (isWhiteNow||!isWhiteNow && !isBotActive)
+						if (isWhiteNow || !isWhiteNow && !isBotActive)
 						{
 							System.out.println(figure.getType());
 							System.out.println(figure.getX() + "|" + figure.getY());
@@ -154,14 +155,24 @@ public class PlayingField
 
 								setWhiteNow(!isWhiteNow);
 
-								if(!checkIfMovePossible())
+								if (!checkIfMovePossible())
 								{
 									controller.end(!isWhiteNow);
 								}
-								else if (isBotActive)
+								else
 								{
-									new Bot(this, random, difficulty).start();
+									boolean draw = checkDraw(figure);
+									if (isBotActive&&!draw)
+									{
+										new Bot(this, random, difficulty).start();
+									}
+									else if(draw)
+									{
+										System.out.println("Draw");
+									}
 								}
+
+
 
 								figures.resetReachable();
 
@@ -185,9 +196,31 @@ public class PlayingField
 		Platform.runLater(() -> gridPaneMain.add(figure, x, y));
 
 		if (removedOne)
+
 		{
 			sortFigures();
 		}
+
+	}
+
+	public boolean checkDraw(Figure figure)
+	{
+		if (figure.getType().equals(""))
+		{
+			roundWithoutStuff++;
+
+			if (roundWithoutStuff >= 30)
+			{
+				roundWithoutStuff = 0;
+				controller.end();
+				return true;
+			}
+		}
+		else
+		{
+			roundWithoutStuff = 0;
+		}
+		return false;
 	}
 
 	void sortFigures()
@@ -234,6 +267,11 @@ public class PlayingField
 	void setDifficulty(int difficulty)
 	{
 		this.difficulty = difficulty;
+	}
+
+	public Controller getController()
+	{
+		return controller;
 	}
 }
 
