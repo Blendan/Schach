@@ -7,6 +7,7 @@ import schach.figures.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 
 public class Bot extends Thread
@@ -16,6 +17,7 @@ public class Bot extends Thread
 	private int roundsToCheck, rounds = 0;
 	private ArrayList<Move> moves = new ArrayList<>();
 	private Random random;
+	private boolean isInCheck = false;
 
 	public Bot(PlayingField playingField, Random random, int roundsToCheck)
 	{
@@ -37,11 +39,20 @@ public class Bot extends Thread
 		int beta = Integer.MAX_VALUE;
 		Instant then = Instant.now();
 
+		isInCheck = figureList.isInCheck(false);
+
+		if(isInCheck)
+		{
+			roundsToCheck = 2;
+		}
+
 		for (Figure value : figureList)
 		{
 			if (!value.isWhite() && !value.getType().equals(""))
 			{
 				value.setReachableFieldsForBot(figureList);
+				value.getCanReach().sort(Comparator.comparingInt(Figure::getValue));
+
 				for (Figure reachableFigure : value.getCanReach())
 				{
 					if (reachableFigure.isReachable())
@@ -54,7 +65,7 @@ public class Bot extends Thread
 
 						moves.add(tempMove);
 
-						if (beta > tempMove.getValue())
+						if (beta > tempMove.getValue()&&!isInCheck)
 						{
 							beta = tempMove.getValue();
 						}
@@ -130,6 +141,7 @@ public class Bot extends Thread
 			for (Figure value : figureList)
 			{
 				value.setReachableFieldsForBot(figureList);
+				value.getCanReach().sort(Comparator.comparingInt(Figure::getValue));
 				for (Figure reachableFigure : value.getCanReach())
 				{
 					if (reachableFigure.isReachable())
@@ -145,10 +157,14 @@ public class Bot extends Thread
 							if (reachableFigure.isWhite())
 							{
 								tempMove = Integer.MIN_VALUE;
+								if(!isWhiteNow)
+									return tempMove;
 							}
 							else
 							{
 								tempMove = Integer.MAX_VALUE;
+								if(isWhiteNow)
+									return tempMove;
 							}
 						}
 						else
