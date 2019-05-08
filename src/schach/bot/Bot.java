@@ -17,6 +17,7 @@ public class Bot extends Thread
 	private int roundsToCheck, rounds = 0;
 	private ArrayList<Move> moves = new ArrayList<>();
 	private Random random;
+	@SuppressWarnings("FieldCanBeLocal")
 	private boolean isInCheck = false;
 
 	public Bot(PlayingField playingField, Random random, int roundsToCheck)
@@ -28,7 +29,7 @@ public class Bot extends Thread
 
 	private void removeMarked()
 	{
-		playingField.getFigures().forEach(v->v.setMarked(false));
+		playingField.getFigures().forEach(v -> v.setMarked(false));
 	}
 
 	@Override
@@ -39,9 +40,11 @@ public class Bot extends Thread
 		int beta = Integer.MAX_VALUE;
 		Instant then = Instant.now();
 
+		ArrayList<Move> possibleMoves = new ArrayList<>();
+
 		isInCheck = figureList.isInCheck(false);
 
-		if(isInCheck)
+		if (isInCheck)
 		{
 			roundsToCheck = 2;
 		}
@@ -55,27 +58,34 @@ public class Bot extends Thread
 
 				for (Figure reachableFigure : value.getCanReach())
 				{
-					if (reachableFigure.isReachable())
-					{
-						FigureList temp = figureList.copyList();
-
-						temp.moveFigure(value, reachableFigure);
-
-						Move tempMove = new Move(value, reachableFigure, checkMoves(temp, Integer.MIN_VALUE, beta, true, 1));
-
-						moves.add(tempMove);
-
-						if (beta > tempMove.getValue()&&!isInCheck)
-						{
-							beta = tempMove.getValue();
-						}
-					}
+					possibleMoves.add(new Move(value, reachableFigure, reachableFigure.getValue()));
 				}
+
 				figureList.resetReachable();
 			}
 		}
 
-		System.out.println("##############\n"+then.getEpochSecond()+"\n"+Instant.now().toEpochMilli()+"\n##############");
+		System.out.println("#########  " + possibleMoves.size());
+		//possibleMoves.sort(Comparator.comparingInt(Move::getValue));
+		possibleMoves.sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*-1);
+
+		for (Move move : possibleMoves)
+		{
+			FigureList temp = figureList.copyList();
+
+			temp.moveFigure(temp.getFigureAt(move.getSource()), temp.getFigureAt(move.getTarget()));
+
+			Move tempMove = new Move(move.getSource(), move.getTarget(), checkMoves(temp, Integer.MIN_VALUE, beta, true, 1));
+
+			moves.add(tempMove);
+
+			if (beta > tempMove.getValue() && !isInCheck)
+			{
+				beta = tempMove.getValue();
+			}
+		}
+
+		System.out.println("##############\n" + then.getEpochSecond() + "\n" + Instant.now().toEpochMilli() + "\n##############");
 
 
 		Platform.runLater(this::makeBestMove);
@@ -110,7 +120,7 @@ public class Bot extends Thread
 		}
 
 		System.out.println("\n" + rounds);
-		System.out.println(moves.size() + "|" + bestValue);
+		System.out.println(moves.size() + "|" + bestValue + "|" + bestMoves.size());
 
 		int randomInt = random.nextInt(bestMoves.size());
 		Figure source = bestMoves.get(randomInt).getSource().getOriginal();
@@ -123,7 +133,7 @@ public class Bot extends Thread
 
 		playingField.setWhiteNow(true);
 
-		if(!playingField.checkIfMovePossible())
+		if (!playingField.checkIfMovePossible())
 		{
 			playingField.getController().end(false);
 		}
@@ -137,6 +147,7 @@ public class Bot extends Thread
 	{
 		if (i < roundsToCheck)
 		{
+			ArrayList<Move> possibleMoves = new ArrayList<>();
 			int bestMove;
 
 			if (isWhiteNow)
@@ -151,67 +162,79 @@ public class Bot extends Thread
 			for (Figure value : figureList)
 			{
 				value.setReachableFieldsForBot(figureList);
-				value.getCanReach().sort(Comparator.comparingInt(Figure::getValue));
+				//value.getCanReach().sort(Comparator.comparingInt(Figure::getValue));
+				value.getCanReach().sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*-1);
+
 				for (Figure reachableFigure : value.getCanReach())
 				{
-					if (reachableFigure.isReachable())
+					possibleMoves.add(new Move(value, reachableFigure, reachableFigure.getValue()));
+				}
+
+				figureList.resetReachable();
+			}
+
+			possibleMoves.sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*-1);
+
+
+			for (Move move : possibleMoves)
+			{
+				FigureList temp = figureList.copyList();
+
+				temp.moveFigure(temp.getFigureAt(move.getSource()), temp.getFigureAt(move.getTarget()));
+
+				int tempMove;
+
+				if (move.getTarget().getType().equals("King"))
+				{
+					if (move.getTarget().isWhite())
 					{
-						FigureList temp = figureList.copyList();
-						temp.moveFigure(temp.getFigureAt(value), temp.getFigureAt(reachableFigure));
-
-						int tempMove;
-
-
-						if (reachableFigure.getType().equals("King"))
+						tempMove = Integer.MIN_VALUE;
+						if (!isWhiteNow)
 						{
-							if (reachableFigure.isWhite())
-							{
-								tempMove = Integer.MIN_VALUE;
-								if(!isWhiteNow)
-									return tempMove;
-							}
-							else
-							{
-								tempMove = Integer.MAX_VALUE;
-								if(isWhiteNow)
-									return tempMove;
-							}
+							return tempMove;
 						}
-						else
-						{
-							tempMove = checkMoves(temp, alpha, beta, !isWhiteNow, i + 1);
-						}
-
+					}
+					else
+					{
+						tempMove = Integer.MAX_VALUE;
 						if (isWhiteNow)
-						{
-							if (bestMove < tempMove)
-							{
-								bestMove = tempMove;
-								if (alpha < bestMove)
-								{
-									alpha = bestMove;
-								}
-							}
-						}
-						else
-						{
-							if (bestMove > tempMove)
-							{
-								bestMove = tempMove;
-								if (beta > bestMove)
-								{
-									beta = bestMove;
-								}
-							}
-						}
-
-						if (beta <= alpha)
 						{
 							return tempMove;
 						}
 					}
 				}
-				figureList.resetReachable();
+				else
+				{
+					tempMove = checkMoves(temp, alpha, beta, !isWhiteNow, i + 1);
+				}
+
+				if (isWhiteNow)
+				{
+					if (bestMove < tempMove)
+					{
+						bestMove = tempMove;
+						if (alpha < bestMove && !isInCheck)
+						{
+							alpha = bestMove;
+						}
+					}
+				}
+				else
+				{
+					if (bestMove > tempMove)
+					{
+						bestMove = tempMove;
+						if (beta > bestMove && !isInCheck)
+						{
+							beta = bestMove;
+						}
+					}
+				}
+
+				if (beta <= alpha)
+				{
+					return tempMove;
+				}
 			}
 
 			return bestMove;
