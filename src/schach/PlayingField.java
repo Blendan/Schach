@@ -209,7 +209,7 @@ public class PlayingField
 		{
 			roundWithoutStuff++;
 
-			if (roundWithoutStuff >= 30)
+			if (roundWithoutStuff >= 50)
 			{
 				roundWithoutStuff = 0;
 				controller.end();

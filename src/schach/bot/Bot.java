@@ -12,6 +12,8 @@ import java.util.Random;
 
 public class Bot extends Thread
 {
+	private static int direction = -1;
+
 	private PlayingField playingField;
 	@SuppressWarnings("FieldCanBeLocal")
 	private int roundsToCheck, rounds = 0;
@@ -54,7 +56,7 @@ public class Bot extends Thread
 			if (!value.isWhite() && !value.getType().equals(""))
 			{
 				value.setReachableFieldsForBot(figureList);
-				value.getCanReach().sort(Comparator.comparingInt(Figure::getValue));
+				//value.getCanReach().sort(Comparator.comparingInt(Figure::getValue));
 
 				for (Figure reachableFigure : value.getCanReach())
 				{
@@ -66,8 +68,7 @@ public class Bot extends Thread
 		}
 
 		System.out.println("#########  " + possibleMoves.size());
-		//possibleMoves.sort(Comparator.comparingInt(Move::getValue));
-		possibleMoves.sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*-1);
+		//possibleMoves.sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*direction); //TODO
 
 		for (Move move : possibleMoves)
 		{
@@ -112,24 +113,21 @@ public class Bot extends Thread
 				else if (bestValue == value.getValue())
 				{
 					bestMoves.add(value);
-					System.out.println(value.getSource().getType() + "-");
+					System.out.println(value.getSource().getType());
 				}
 			}
 
 			//System.out.println(value.getValue());
 		}
 
-		System.out.println("\n" + rounds);
-		System.out.println(moves.size() + "|" + bestValue + "|" + bestMoves.size());
+		System.out.println("\n rounds:" + rounds);
+		System.out.println(moves.size() + "| best val:" + bestValue + "|" + bestMoves.size());
 
 		int randomInt = random.nextInt(bestMoves.size());
 		Figure source = bestMoves.get(randomInt).getSource().getOriginal();
 		Figure target = bestMoves.get(randomInt).getTarget().getOriginal();
 		playingField.moveFigure(source, target).setMarked(true);
 		source.setMarked(true);
-
-		System.out.println(source.getX() + "|" + source.getY() + "|" + source.getType());
-		System.out.println(target.getX() + "|" + target.getY() + "|" + target.getType());
 
 		playingField.setWhiteNow(true);
 
@@ -162,8 +160,6 @@ public class Bot extends Thread
 			for (Figure value : figureList)
 			{
 				value.setReachableFieldsForBot(figureList);
-				//value.getCanReach().sort(Comparator.comparingInt(Figure::getValue));
-				value.getCanReach().sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*-1);
 
 				for (Figure reachableFigure : value.getCanReach())
 				{
@@ -173,7 +169,7 @@ public class Bot extends Thread
 				figureList.resetReachable();
 			}
 
-			possibleMoves.sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*-1);
+			//possibleMoves.sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*direction); //TODO
 
 
 			for (Move move : possibleMoves)
@@ -218,6 +214,7 @@ public class Bot extends Thread
 							alpha = bestMove;
 						}
 					}
+
 				}
 				else
 				{
@@ -233,7 +230,8 @@ public class Bot extends Thread
 
 				if (beta <= alpha)
 				{
-					return tempMove;
+					System.out.println("-#-#-#-#-#   "+bestMove + "  " + isWhiteNow);
+					return bestMove;
 				}
 			}
 
@@ -249,12 +247,15 @@ public class Bot extends Thread
 	private int getValue(FigureList figureList)
 	{
 		int i = 0;
+		int anz = 0;
 		boolean lostKing = true;
 
 		for (Figure value : figureList)
 		{
 			if (!value.getType().equals(""))
 			{
+				anz ++;
+
 				if (value.isWhite())
 				{
 					i += value.getValue();
@@ -271,6 +272,8 @@ public class Bot extends Thread
 				}
 			}
 		}
+
+		//System.out.println(anz);
 
 		if (lostKing)
 		{

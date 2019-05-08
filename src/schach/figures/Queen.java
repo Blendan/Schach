@@ -7,7 +7,7 @@ public class Queen extends Figure
 	public Queen(boolean isWhite)
 	{
 		super();
-		setValue(9);
+		setValue(14);
 		setType("Queen");
 		this.setWhite(isWhite);
 	}
