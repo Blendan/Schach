@@ -60,7 +60,20 @@ public class Bot extends Thread
 
 				for (Figure reachableFigure : value.getCanReach())
 				{
-					possibleMoves.add(new Move(value, reachableFigure, reachableFigure.getValue()));
+					Move tempMove = new Move(value, reachableFigure, reachableFigure.getValue());
+
+					tempMove.setSortValue(0);
+
+					if(!reachableFigure.getType().equals(""))
+					{
+						tempMove.setSortValue(3);
+					}
+					else if(reachableFigure.getY()<value.getX())
+					{
+						tempMove.setSortValue(1);
+					}
+
+					possibleMoves.add(tempMove);
 				}
 
 				figureList.resetReachable();
@@ -68,7 +81,7 @@ public class Bot extends Thread
 		}
 
 		System.out.println("#########  " + possibleMoves.size());
-		//possibleMoves.sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*direction); //TODO
+		possibleMoves.sort((a,b)-> Integer.compare(a.getSortValue(),b.getSortValue())*direction);
 
 		for (Move move : possibleMoves)
 		{
@@ -163,13 +176,30 @@ public class Bot extends Thread
 
 				for (Figure reachableFigure : value.getCanReach())
 				{
-					possibleMoves.add(new Move(value, reachableFigure, reachableFigure.getValue()));
+					Move tempMove = new Move(value, reachableFigure, reachableFigure.getValue());
+
+					tempMove.setSortValue(0);
+
+					if(!reachableFigure.getType().equals(""))
+					{
+						tempMove.setSortValue(3);
+					}
+					else if(reachableFigure.getY()<value.getX()&&!isWhiteNow)
+					{
+						tempMove.setSortValue(1);
+					}
+					else if(reachableFigure.getY()>value.getX())
+					{
+						tempMove.setSortValue(1);
+					}
+
+					possibleMoves.add(tempMove);
 				}
 
 				figureList.resetReachable();
 			}
 
-			//possibleMoves.sort((a,b)-> Integer.compare(a.getValue(),b.getValue())*direction); //TODO
+			possibleMoves.sort((a,b)-> Integer.compare(a.getSortValue(),b.getSortValue())*direction);
 
 
 			for (Move move : possibleMoves)

@@ -38,7 +38,7 @@ public class Controller implements Initializable
 	{
 		playingField = new PlayingField(gridPaneMain, this);
 
-		for(int i = 1; i <= 4; i ++)
+		for(int i = 1; i <= 6; i ++)
 		{
 			comboBoxDifficulty.getItems().add(i+"");
 		}

@@ -6,6 +6,7 @@ class Move
 {
 	private Figure source, target;
 	private int value;
+	private int sortValue;
 
 	Move(Figure source, Figure target, int value)
 	{
@@ -27,5 +28,15 @@ class Move
 	int getValue()
 	{
 		return value;
+	}
+
+	public int getSortValue()
+	{
+		return sortValue;
+	}
+
+	public void setSortValue(int sortValue)
+	{
+		this.sortValue = sortValue;
 	}
 }
