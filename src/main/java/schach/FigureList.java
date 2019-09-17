@@ -3,43 +3,25 @@ package schach;
 import javafx.application.Platform;
 import schach.figures.*;
 
-import java.util.ArrayList;
-
-public class FigureList extends ArrayList<Figure>
+public class FigureList
 {
 	private int value = 0;
+	private Figure[][] figures = new Figure[8][8];
 
 	public FigureList()
 	{
 
 	}
 
+	public FigureList(Figure[][] figures, int value)
+	{
+		this.figures = figures;
+		this.value = value;
+	}
+
 	void sort()
 	{
-		ArrayList<Figure> toRemove = new ArrayList<>();
-		super.sort((a, b) ->
-		{
-			if ((a.getX() + a.getY() * 8) < (b.getX() + b.getY() * 8))
-			{
-				return -1;
-			}
-			else if ((a.getX() + a.getY() * 8) > (b.getX() + b.getY() * 8))
-			{
-				return 1;
-			}
-			else
-			{
-				toRemove.add(a);
-			}
-			return 0;
-		});
 
-		this.removeAll(toRemove);
-
-		if(toRemove.size()!=0)
-		{
-			sort();
-		}
 	}
 
 	void colorFields()
@@ -47,45 +29,47 @@ public class FigureList extends ArrayList<Figure>
 		boolean isBlack = false;
 		int lastY = 0;
 
-		for (Figure value : this)
+		for (Figure[] valueArray : figures)
 		{
-			try
+			for (Figure value : valueArray)
 			{
-				value.getStyleClass().clear();
-			}
-			catch (NullPointerException e)
-			{
-				System.out.println("That shit again ("+e.getMessage()+")");
-			}
+				try
+				{
+					value.getStyleClass().clear();
+				} catch (NullPointerException e)
+				{
+					System.out.println("That shit again (" + e.getMessage() + ")");
+				}
 
-			if (lastY < value.getY())
-			{
-				lastY = value.getY();
+				if (lastY < value.getY())
+				{
+					lastY = value.getY();
+					isBlack = !isBlack;
+
+				}
+
+				if (!value.isMarked())
+				{
+					if (isBlack)
+					{
+						value.getStyleClass().add("btn-black");
+					}
+					else
+					{
+						value.getStyleClass().add("btn-white");
+					}
+				}
+
 				isBlack = !isBlack;
-
 			}
-
-			if(!value.isMarked())
-			{
-				if (isBlack)
-				{
-					value.getStyleClass().add("btn-black");
-				}
-				else
-				{
-					value.getStyleClass().add("btn-white");
-				}
-			}
-
-			isBlack = !isBlack;
 		}
 	}
 
 	public Figure getFigureAt(int x, int y)
 	{
-		if (x + y * 8 < this.size() && x < 8 && y < 8 && x >= 0 && y >= 0)
+		if (x < 8 && y < 8 && x >= 0 && y >= 0)
 		{
-			return this.get(x + y * 8);
+			return figures[x][y];
 		}
 		else
 		{
@@ -98,9 +82,9 @@ public class FigureList extends ArrayList<Figure>
 		int x = figure.getX();
 		int y = figure.getY();
 
-		if (x + y * 8 < this.size() && x < 8 && y < 8 && x >= 0 && y >= 0)
+		if (x < 8 && y < 8 && x >= 0 && y >= 0)
 		{
-			return this.get(x + y * 8);
+			return figures[x][y];
 		}
 		else
 		{
@@ -108,25 +92,11 @@ public class FigureList extends ArrayList<Figure>
 		}
 	}
 
-	private void setFigureToCoordinate(int x, int y, Figure figure)
+	public void setFigureToCoordinate(int x, int y, Figure figure)
 	{
-		Figure temp = getFigureAt(x, y);
-		if (temp != null)
-		{
-			if (temp.getX() == x && temp.getY() == y)
-			{
-				this.remove(temp);
-			}
-		}
-
-		if (!this.contains(figure))
-		{
-			this.add(figure);
-		}
+		figures[x][y] = figure;
 
 		figure.setCoordinate(x, y);
-
-		sort();
 	}
 
 	//for the bot (no need to display list)
@@ -147,8 +117,6 @@ public class FigureList extends ArrayList<Figure>
 		if(source.getType().equals("Peasant")&&(toY==0&&source.isWhite()||toY==7&&!source.isWhite()))
 		{
 				this.setFigureToCoordinate(toX, toY, new Queen(source.isWhite()));
-				this.remove(source);
-				this.sort();
 		}
 		else
 		{
@@ -174,7 +142,6 @@ public class FigureList extends ArrayList<Figure>
 
 		if (source.getType().equals("King"))
 		{
-			sort();
 			King king = (King) source;
 			if (king.isInRochade())
 			{
@@ -197,7 +164,6 @@ public class FigureList extends ArrayList<Figure>
 		}
 
 		resetReachable();
-		sort();
 	}
 
 	Figure moveFigure(Figure source, Figure target, PlayingField playingField)
@@ -220,7 +186,6 @@ public class FigureList extends ArrayList<Figure>
 		if(source.getType().equals("Peasant")&&(toY==0&&source.isWhite()||toY==7&&!source.isWhite()))
 		{
 			playingField.setFigureToCoordinate(toX, toY, new Queen(source.isWhite()));
-			this.remove(source);
 		}
 		else
 		{
@@ -259,7 +224,6 @@ public class FigureList extends ArrayList<Figure>
 		}
 
 		resetReachable();
-		sort();
 		colorFields();
 
 		return empty;
@@ -269,15 +233,18 @@ public class FigureList extends ArrayList<Figure>
 	{
 		this.resetReachable();
 		Figure king = null;
-		for (Figure value: this)
+		for (Figure[] valueArray :figures)
 		{
-			if(value.isWhite()!=isWhiteNow)
+			for (Figure value :valueArray)
 			{
-				value.setReachableFieldsForKing(this);
-			}
-			else if(value.getType().equals("King"))
-			{
-				king = value;
+				if (value.isWhite() != isWhiteNow)
+				{
+					value.setReachableFieldsForKing(this);
+				}
+				else if (value.getType().equals("King"))
+				{
+					king = value;
+				}
 			}
 		}
 
@@ -297,15 +264,18 @@ public class FigureList extends ArrayList<Figure>
 	{
 		int gameState = 0;
 
-		for (Figure value :this)
+		for (Figure[] valueArray :figures)
 		{
-			if(value.isWhite())
+			for (Figure value :valueArray)
 			{
-				gameState += value.getValue();
-			}
-			else
-			{
-				gameState -= value.getValue();
+				if (value.isWhite())
+				{
+					gameState += value.getValue();
+				}
+				else
+				{
+					gameState -= value.getValue();
+				}
 			}
 		}
 
@@ -314,53 +284,59 @@ public class FigureList extends ArrayList<Figure>
 
 	public FigureList copyList()
 	{
-		FigureList temp = new FigureList();
+		Figure[][] temp = new Figure[8][8];
 
-		for (Figure value : this)
+		for (Figure[] valueArray :figures)
 		{
-			switch (value.getType())
+			for (Figure value :valueArray)
 			{
-				case "":
-					temp.add(new Empty(value));
-					break;
-				case "King":
-					temp.add(new King(value));
-					break;
-				case "Queen":
-					temp.add(new Queen(value));
-					break;
-				case "Runner":
-					temp.add(new Runner(value));
-					break;
-				case "Horse":
-					temp.add(new Horse(value));
-					break;
-				case "Tower":
-					temp.add(new Tower(value));
-					break;
-				case "Peasant":
-					temp.add(new Peasant(value));
-					break;
+				switch (value.getType())
+				{
+					case "":
+						temp[value.getX()][value.getY()] = new Empty(value);
+						break;
+					case "King":
+						temp[value.getX()][value.getY()] = new King(value);
+						break;
+					case "Queen":
+						temp[value.getX()][value.getY()] = new Queen(value);
+						break;
+					case "Runner":
+						temp[value.getX()][value.getY()] = new Runner(value);
+						break;
+					case "Horse":
+						temp[value.getX()][value.getY()] = new Horse(value);
+						break;
+					case "Tower":
+						temp[value.getX()][value.getY()] = new Tower(value);
+						break;
+					case "Peasant":
+						temp[value.getX()][value.getY()] = new Peasant(value);
+						break;
+				}
 			}
 
 		}
 
-		return temp;
+		return new FigureList(temp,value);
 	}
 
 	public void resetReachable()
 	{
-		for (Figure value : this)
+		for (Figure[] valueArray :figures)
 		{
-			value.setReachable(false);
+			for (Figure value :valueArray)
+			{
+				value.setReachable(false);
 
-			if (value.getType().equals(""))
-			{
-				((Empty) value).setRochadeTarget(false);
-			}
-			else if (value.getType().equals("King"))
-			{
-				((King) value).setInRochade(false);
+				if (value.getType().equals(""))
+				{
+					((Empty) value).setRochadeTarget(false);
+				}
+				else if (value.getType().equals("King"))
+				{
+					((King) value).setInRochade(false);
+				}
 			}
 		}
 	}
@@ -368,5 +344,32 @@ public class FigureList extends ArrayList<Figure>
 	public int getValue()
 	{
 		return value;
+	}
+
+	public Figure[] getArray()
+	{
+		Figure[] temp = new Figure[64];
+
+
+		int index = 0;
+		for (Figure[] valueArray: figures)
+		{
+			for (Figure value: valueArray)
+			{
+				temp[index] = value;
+				index ++;
+			}
+		}
+		return temp;
+	}
+
+	public Figure[][] getFigures()
+	{
+		return figures;
+	}
+
+	public void setFigures(Figure[][] figures)
+	{
+		this.figures = figures;
 	}
 }

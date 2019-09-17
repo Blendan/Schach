@@ -20,6 +20,7 @@ public class Horse extends Figure
 	@Override
 	public void setReachableFieldsForBot(FigureList figureList)
 	{
+		int index = 0;
 		for (int i = -2; i <= 2; i += 4)
 		{
 			for (int j = -1; j <= 1; j += 2)
@@ -31,7 +32,8 @@ public class Horse extends Figure
 					if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 					{
 						temp.setReachable(true);
-						getCanReach().add(temp);
+						canReach[index] = temp;
+						index ++;
 					}
 				}
 
@@ -42,7 +44,8 @@ public class Horse extends Figure
 					if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 					{
 						temp.setReachable(true);
-						getCanReach().add(temp);
+						canReach[index] = temp;
+						index ++;
 					}
 				}
 			}
@@ -52,6 +55,7 @@ public class Horse extends Figure
 	@Override
 	public void setReachableFields(FigureList figureList)
 	{
+		int index = 0;
 		for (int i = -2; i <= 2; i += 4)
 		{
 			for (int j = -1; j <= 1; j += 2)
@@ -63,7 +67,8 @@ public class Horse extends Figure
 					if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 					{
 						temp.setReachable(true);
-						getCanReach().add(temp);
+						canReach[index] = temp;
+						index ++;
 					}
 				}
 
@@ -74,7 +79,8 @@ public class Horse extends Figure
 					if (temp.isWhite() != this.isWhite() || temp.getType().equals(""))
 					{
 						temp.setReachable(true);
-						getCanReach().add(temp);
+						canReach[index] = temp;
+						index ++;
 					}
 				}
 			}
@@ -85,6 +91,7 @@ public class Horse extends Figure
 	@Override
 	public void setReachableFieldsForKing(FigureList figureList)
 	{
+		int index = 0;
 		for (int i = -2; i <= 2; i += 4)
 		{
 			for (int j = -1; j <= 1; j += 2)
@@ -94,7 +101,8 @@ public class Horse extends Figure
 				if (temp != null)
 				{
 					temp.setReachable(true);
-					getCanReach().add(temp);
+					canReach[index] = temp;
+					index ++;
 				}
 
 				temp = figureList.getFigureAt(this.getX() + j, this.getY() + i);
@@ -102,7 +110,8 @@ public class Horse extends Figure
 				if (temp != null)
 				{
 					temp.setReachable(true);
-					getCanReach().add(temp);
+					canReach[index] = temp;
+					index ++;
 				}
 			}
 		}

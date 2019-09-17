@@ -273,6 +273,8 @@ public class Bot extends Thread
 		}
 	}
 
+
+
 	private int getValue(FigureList figureList)
 	{
 		/*int i = 0;

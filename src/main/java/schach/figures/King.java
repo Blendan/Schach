@@ -165,12 +165,13 @@ public class King extends Figure
 	@Override
 	public void setReachableFields(FigureList figureList)
 	{
+		int index = 0;
 		towerRight = null;
 		towerLeft = null;
 
 		ArrayList<Figure> reachable = new ArrayList<>();
 
-		for (Figure value : figureList)
+		for (Figure value : figureList.getArray())
 		{
 			if (value.isWhite() != isWhite() && !value.getType().equals(""))
 			{
@@ -234,7 +235,8 @@ public class King extends Figure
 							{
 								if (figureList.getFigureAt(3, y).getType().equals(""))
 								{
-									reachable.add(temp);
+									canReach[index] = temp;
+									index ++;
 									empty1 = (Empty) temp;
 									towerLeft = tower;
 								}
@@ -260,7 +262,8 @@ public class King extends Figure
 							{
 								if (figureList.getFigureAt(5, y).getType().equals(""))
 								{
-									reachable.add(temp);
+									canReach[index] = temp;
+									index ++;
 									empty2 = (Empty) temp;
 									towerRight = tower;
 								}
@@ -273,12 +276,14 @@ public class King extends Figure
 		}
 
 		figureList.resetReachable();
-		figureList.forEach(v->{
+
+		for (Figure v : figureList.getArray())
+		{
 			if(v.isWhite()!=this.isWhite())
 			{
-				v.getCanReach().clear();
+				v.setCanReach(new Figure[64]);
 			}
-		});
+		}
 
 		if (towerLeft != null)
 		{
@@ -307,6 +312,7 @@ public class King extends Figure
 	@Override
 	public void setReachableFieldsForKing(FigureList figureList)
 	{
+		int index = 0;
 		towerRight = null;
 		towerLeft = null;
 
@@ -321,7 +327,8 @@ public class King extends Figure
 					if (temp != null)
 					{
 						temp.setReachable(true);
-						getCanReach().add(temp);
+						canReach[index] = temp;
+						index ++;
 					}
 				}
 			}
@@ -361,7 +368,8 @@ public class King extends Figure
 								if (figureList.getFigureAt(3, y).getType().equals(""))
 								{
 									temp.setReachable(true);
-									getCanReach().add(temp);
+									canReach[index] = temp;
+									index ++;
 									towerLeft = tower;
 								}
 							}
@@ -387,7 +395,7 @@ public class King extends Figure
 								if (figureList.getFigureAt(5, y).getType().equals(""))
 								{
 									temp.setReachable(true);
-									getCanReach().add(temp);
+									canReach[index] = temp;
 									towerRight = tower;
 								}
 							}

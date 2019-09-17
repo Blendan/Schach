@@ -20,6 +20,7 @@ public class Peasant extends Figure
 	@Override
 	public void setReachableFieldsForBot(FigureList figureList)
 	{
+		int index = 0;
 		Figure temp;
 		int y1;
 		int y2;
@@ -44,7 +45,8 @@ public class Peasant extends Figure
 			if (temp.getType().equals(""))
 			{
 				temp.setReachable(true);
-				getCanReach().add(temp);
+				canReach[index] = temp;
+				index ++;
 
 				temp = figureList.getFigureAt(this.getX(), y2);
 				if (temp != null)
@@ -52,7 +54,8 @@ public class Peasant extends Figure
 					if (!isMoved() && temp.getType().equals(""))
 					{
 						temp.setReachable(true);
-						getCanReach().add(temp);
+						canReach[index] = temp;
+						index ++;
 					}
 				}
 			}
@@ -67,7 +70,8 @@ public class Peasant extends Figure
 				if (!temp.getType().equals("") && temp.isWhite() != isWhite())
 				{
 					temp.setReachable(true);
-					getCanReach().add(temp);
+					canReach[index] = temp;
+					index ++;
 				}
 			}
 		}
@@ -76,6 +80,7 @@ public class Peasant extends Figure
 	@Override
 	public void setReachableFields(FigureList figureList)
 	{
+		int index = 0;
 		Figure temp;
 		int y1;
 		int y2;
@@ -100,7 +105,8 @@ public class Peasant extends Figure
 			if (temp.getType().equals(""))
 			{
 				temp.setReachable(true);
-				getCanReach().add(temp);
+				canReach[index] = temp;
+				index ++;
 
 				temp = figureList.getFigureAt(this.getX(), y2);
 				if (temp != null)
@@ -108,7 +114,8 @@ public class Peasant extends Figure
 					if (!isMoved() && temp.getType().equals(""))
 					{
 						temp.setReachable(true);
-						getCanReach().add(temp);
+						canReach[index] = temp;
+						index ++;
 					}
 				}
 			}
@@ -123,7 +130,8 @@ public class Peasant extends Figure
 				if (!temp.getType().equals("") && temp.isWhite() != isWhite())
 				{
 					temp.setReachable(true);
-					getCanReach().add(temp);
+					canReach[index] = temp;
+					index ++;
 				}
 			}
 		}

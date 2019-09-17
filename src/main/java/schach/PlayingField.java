@@ -37,7 +37,7 @@ public class PlayingField
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean checkIfMovePossible()
 	{
-		for (Figure value : figures)
+		for (Figure value : figures.getArray())
 		{
 			if (value.isWhite() == isWhiteNow && !value.getType().equals(""))
 			{
@@ -79,7 +79,7 @@ public class PlayingField
 
 	void removeFigure(Figure figure)
 	{
-		figures.remove(figure);
+		figures.setFigureToCoordinate(figure.getX(),figure.getY(),null);
 		Platform.runLater(() -> gridPaneMain.getChildren().remove(figure));
 
 		if (figure.getType().equals("King"))
@@ -109,120 +109,91 @@ public class PlayingField
 		}
 
 		int finalSize = size;
-		figures.forEach(v -> v.setPrefSize(finalSize, finalSize));
+		for (Figure v : figures.getArray())
+		{
+			v.setPrefSize(finalSize, finalSize);
+		}
 	}
 
 	void setFigureToCoordinate(int x, int y, Figure figure)
 	{
-		boolean removedOne = false;
 		Figure temp = figures.getFigureAt(x, y);
 		int index =  x + y * 8;
 
-
-
-
-		if (!figures.contains(figure))
-		{
-			figure.setOnAction(e ->
+		figure.setOnAction(e ->
+				{
+					//noinspection ConstantConditions
+					if (isWhiteNow || !isWhiteNow && !isBotActive)
 					{
-						//noinspection ConstantConditions
-						if (isWhiteNow || !isWhiteNow && !isBotActive)
+						System.out.println(figure.getType());
+						System.out.println(figure.getX() + "|" + figure.getY());
+
+						if (figure.isWhite())
 						{
-							System.out.println(figure.getType());
-							System.out.println(figure.getX() + "|" + figure.getY());
-							System.out.println(figure.getX() + figure.getY() * 8 + "|" + figures.lastIndexOf(figure));
+							System.out.println("W");
+						}
+						else
+						{
+							System.out.println("B");
+						}
+						System.out.println("-----");
 
-							if (figure.isWhite())
+
+						if (this.getActive() != null && figure.isReachable())
+						{
+							this.moveFigure(this.getActive(), figure);
+							this.setActive(null);
+							this.sortFigures();
+
+							setWhiteNow(!isWhiteNow);
+
+							if (!checkIfMovePossible())
 							{
-								System.out.println("W");
+								controller.end(!isWhiteNow);
 							}
 							else
 							{
-								System.out.println("B");
+								boolean draw = checkDraw(figure);
+								if (isBotActive&&!draw)
+								{
+									new Bot(this, random, difficulty).start();
+								}
+								else if(draw)
+								{
+									System.out.println("Draw");
+								}
 							}
-							System.out.println("-----");
 
 
-							if (this.getActive() != null && figure.isReachable())
+
+							figures.resetReachable();
+
+						}
+						else
+						{
+							figures.resetReachable();
+							if (isWhiteNow == figure.isWhite())
 							{
-								this.moveFigure(this.getActive(), figure);
-								this.setActive(null);
-								this.sortFigures();
-
-								setWhiteNow(!isWhiteNow);
-
-								if (!checkIfMovePossible())
-								{
-									controller.end(!isWhiteNow);
-								}
-								else
-								{
-									boolean draw = checkDraw(figure);
-									if (isBotActive&&!draw)
-									{
-										new Bot(this, random, difficulty).start();
-									}
-									else if(draw)
-									{
-										System.out.println("Draw");
-									}
-								}
-
-
-
-								figures.resetReachable();
-
-							}
-							else
-							{
-								figures.resetReachable();
-								if (isWhiteNow == figure.isWhite())
-								{
-									this.setActive(figure);
-									figure.setReachableFields(figures);
-								}
+								this.setActive(figure);
+								figure.setReachableFields(figures);
 							}
 						}
 					}
-			);
-		}
-		else
-		{
-			if(figures.indexOf(figure)<index)
-			{
-				index --;
-			}
+				}
+		);
 
-			figures.remove(figure);
-		}
-
-		if(figures.size()<=index)
-		{
-			figures.add(figure);
-		}
-		else
-		{
-			figures.add(index,figure);
-		}
+		figures.setFigureToCoordinate(x,y,figure);
 
 		if (temp != null)
 		{
 			if (temp.getX() == x && temp.getY() == y)
 			{
-				System.out.println("r");
 				removeFigure(temp);
-				removedOne = true;
 			}
 		}
 
 		figure.setCoordinate(x, y);
 		Platform.runLater(() -> gridPaneMain.add(figure, x, y));
-
-		if (figures.size()<=index)
-		{
-			sortFigures();
-		}
-
 	}
 
 	public boolean checkDraw(Figure figure)
