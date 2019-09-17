@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class FigureList extends ArrayList<Figure>
 {
+	private int value = 0;
 
 	public FigureList()
 	{
@@ -154,6 +155,18 @@ public class FigureList extends ArrayList<Figure>
 			this.setFigureToCoordinate(toX, toY, source);
 		}
 
+		if(!target.getType().equals(""))
+		{
+			if(target.isWhite())
+			{
+				value -= target.getValue();
+			}
+			else
+			{
+				value += target.getValue();
+			}
+		}
+
 
 		//adds an empty figure to the start position
 		Figure empty = new Empty();
@@ -208,7 +221,6 @@ public class FigureList extends ArrayList<Figure>
 		{
 			playingField.setFigureToCoordinate(toX, toY, new Queen(source.isWhite()));
 			this.remove(source);
-			this.sort();
 		}
 		else
 		{
@@ -224,7 +236,7 @@ public class FigureList extends ArrayList<Figure>
 		//rochade
 		if (source.getType().equals("King"))
 		{
-			sort();
+			//sort();
 			King king = (King) source;
 			if (king.isInRochade())
 			{
@@ -351,5 +363,10 @@ public class FigureList extends ArrayList<Figure>
 				((King) value).setInRochade(false);
 			}
 		}
+	}
+
+	public int getValue()
+	{
+		return value;
 	}
 }

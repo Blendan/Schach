@@ -34,6 +34,7 @@ public class PlayingField
 		makeGrid();
 	}
 
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean checkIfMovePossible()
 	{
 		for (Figure value : figures)
@@ -115,15 +116,10 @@ public class PlayingField
 	{
 		boolean removedOne = false;
 		Figure temp = figures.getFigureAt(x, y);
-		if (temp != null)
-		{
-			if (temp.getX() == x && temp.getY() == y)
-			{
-				System.out.println("r");
-				removeFigure(temp);
-				removedOne = true;
-			}
-		}
+		int index =  x + y * 8;
+
+
+
 
 		if (!figures.contains(figure))
 		{
@@ -189,14 +185,40 @@ public class PlayingField
 						}
 					}
 			);
+		}
+		else
+		{
+			if(figures.indexOf(figure)<index)
+			{
+				index --;
+			}
+
+			figures.remove(figure);
+		}
+
+		if(figures.size()<=index)
+		{
 			figures.add(figure);
+		}
+		else
+		{
+			figures.add(index,figure);
+		}
+
+		if (temp != null)
+		{
+			if (temp.getX() == x && temp.getY() == y)
+			{
+				System.out.println("r");
+				removeFigure(temp);
+				removedOne = true;
+			}
 		}
 
 		figure.setCoordinate(x, y);
 		Platform.runLater(() -> gridPaneMain.add(figure, x, y));
 
-		if (removedOne)
-
+		if (figures.size()<=index)
 		{
 			sortFigures();
 		}

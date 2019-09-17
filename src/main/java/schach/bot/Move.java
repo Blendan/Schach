@@ -30,12 +30,12 @@ class Move
 		return value;
 	}
 
-	public int getSortValue()
+	int getSortValue()
 	{
 		return sortValue;
 	}
 
-	public void setSortValue(int sortValue)
+	void setSortValue(int sortValue)
 	{
 		this.sortValue = sortValue;
 	}

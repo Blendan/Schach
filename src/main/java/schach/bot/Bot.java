@@ -7,7 +7,6 @@ import schach.figures.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Random;
 
 public class Bot extends Thread
@@ -276,15 +275,15 @@ public class Bot extends Thread
 
 	private int getValue(FigureList figureList)
 	{
-		int i = 0;
-		int anz = 0;
+		/*int i = 0;
+		//int anz = 0;
 		boolean lostKing = true;
 
 		for (Figure value : figureList)
 		{
 			if (!value.getType().equals(""))
 			{
-				anz ++;
+				//anz ++;
 
 				if (value.isWhite())
 				{
@@ -308,8 +307,8 @@ public class Bot extends Thread
 		if (lostKing)
 		{
 			return Integer.MAX_VALUE;
-		}
+		}*/
 
-		return i;
+		return figureList.getValue();
 	}
 }
