@@ -44,13 +44,16 @@ public class PlayingField
 				value.setReachableFields(figures);
 				for (Figure check : value.getCanReach())
 				{
-					if (check.isReachable())
+					if(check != null)
 					{
-						return true;
+						if (check.isReachable())
+						{
+							return true;
+						}
 					}
 				}
 				figures.resetReachable();
-				value.getCanReach().clear();
+				value.setCanReach(new Figure[64]);
 			}
 		}
 		return false;
@@ -79,7 +82,7 @@ public class PlayingField
 
 	void removeFigure(Figure figure)
 	{
-		figures.setFigureToCoordinate(figure.getX(),figure.getY(),null);
+		//figures.setFigureToCoordinate(figure.getX(),figure.getY(),null);
 		Platform.runLater(() -> gridPaneMain.getChildren().remove(figure));
 
 		if (figure.getType().equals("King"))
@@ -111,14 +114,16 @@ public class PlayingField
 		int finalSize = size;
 		for (Figure v : figures.getArray())
 		{
-			v.setPrefSize(finalSize, finalSize);
+			if(v != null)
+			{
+				v.setPrefSize(finalSize, finalSize);
+			}
 		}
 	}
 
 	void setFigureToCoordinate(int x, int y, Figure figure)
 	{
 		Figure temp = figures.getFigureAt(x, y);
-		int index =  x + y * 8;
 
 		figure.setOnAction(e ->
 				{

@@ -3,6 +3,7 @@ package schach;
 import javafx.application.Platform;
 import schach.figures.*;
 
+@SuppressWarnings("ClassEscapesDefinedScope")
 public class FigureList
 {
 	private int value = 0;
@@ -10,7 +11,7 @@ public class FigureList
 
 	public FigureList()
 	{
-
+		figures = new Figure[8][8];
 	}
 
 	public FigureList(Figure[][] figures, int value)
@@ -24,6 +25,11 @@ public class FigureList
 
 	}
 
+	void clear()
+	{
+		figures = new Figure[8][8];
+	}
+
 	void colorFields()
 	{
 		boolean isBlack = false;
@@ -33,30 +39,34 @@ public class FigureList
 		{
 			for (Figure value : valueArray)
 			{
-				try
+				if(value !=null)
 				{
-					value.getStyleClass().clear();
-				} catch (NullPointerException e)
-				{
-					System.out.println("That shit again (" + e.getMessage() + ")");
-				}
-
-				if (lastY < value.getY())
-				{
-					lastY = value.getY();
-					isBlack = !isBlack;
-
-				}
-
-				if (!value.isMarked())
-				{
-					if (isBlack)
+					try
 					{
-						value.getStyleClass().add("btn-black");
+						value.getStyleClass().clear();
 					}
-					else
+					catch (NullPointerException e)
 					{
-						value.getStyleClass().add("btn-white");
+						System.out.println("That shit again (" + e.getMessage() + ")");
+					}
+
+					if (lastY < value.getY())
+					{
+						lastY = value.getY();
+						isBlack = !isBlack;
+
+					}
+
+					if (!value.isMarked())
+					{
+						if (isBlack)
+						{
+							value.getStyleClass().add("btn-black");
+						}
+						else
+						{
+							value.getStyleClass().add("btn-white");
+						}
 					}
 				}
 
@@ -96,7 +106,11 @@ public class FigureList
 	{
 		figures[x][y] = figure;
 
-		figure.setCoordinate(x, y);
+		if(figure!=null)
+		{
+			figure.setCoordinate(x, y);
+			System.out.println(x+"  "+y);
+		}
 	}
 
 	//for the bot (no need to display list)
@@ -264,9 +278,9 @@ public class FigureList
 	{
 		int gameState = 0;
 
-		for (Figure[] valueArray :figures)
+		for (Figure value : getArray())
 		{
-			for (Figure value :valueArray)
+			if(value != null)
 			{
 				if (value.isWhite())
 				{
@@ -327,15 +341,18 @@ public class FigureList
 		{
 			for (Figure value :valueArray)
 			{
-				value.setReachable(false);
+				if(value != null)
+				{
+					value.setReachable(false);
 
-				if (value.getType().equals(""))
-				{
-					((Empty) value).setRochadeTarget(false);
-				}
-				else if (value.getType().equals("King"))
-				{
-					((King) value).setInRochade(false);
+					if (value.getType().equals(""))
+					{
+						((Empty) value).setRochadeTarget(false);
+					}
+					else if (value.getType().equals("King"))
+					{
+						((King) value).setInRochade(false);
+					}
 				}
 			}
 		}
@@ -360,6 +377,7 @@ public class FigureList
 				index ++;
 			}
 		}
+
 		return temp;
 	}
 

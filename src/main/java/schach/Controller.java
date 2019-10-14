@@ -124,7 +124,7 @@ public class Controller implements Initializable
 
 		playingField.setFigureToCoordinate(4, 7, new King(true));
 
-		playingField.getFigures().sort();
+		//playingField.getFigures().sort();
 		playingField.getFigures().colorFields();
 		playingField.getFigures().resetReachable();
 		playingField.scaleField();
@@ -164,6 +164,9 @@ public class Controller implements Initializable
 
 	private void stopGame()
 	{
-		playingField.getFigures().forEach(v->v.setOnAction(e->{}));
+		for (Figure v : playingField.getFigures().getArray())
+		{
+			v.setOnAction(e->{});
+		}
 	}
 }

@@ -30,7 +30,10 @@ public class Bot extends Thread
 
 	private void removeMarked()
 	{
-		playingField.getFigures().forEach(v -> v.setMarked(false));
+		for (Figure v : playingField.getFigures().getArray())
+		{
+			v.setMarked(false);
+		}
 	}
 
 	@Override
@@ -50,7 +53,7 @@ public class Bot extends Thread
 			roundsToCheck = 2;
 		}
 
-		for (Figure value : figureList)
+		for (Figure value : figureList.getArray())
 		{
 			if (!value.isWhite() && !value.getType().equals(""))
 			{
@@ -59,20 +62,23 @@ public class Bot extends Thread
 
 				for (Figure reachableFigure : value.getCanReach())
 				{
-					Move tempMove = new Move(value, reachableFigure, reachableFigure.getValue());
-
-					tempMove.setSortValue(0);
-
-					if(!reachableFigure.getType().equals(""))
+					if(reachableFigure != null)
 					{
-						tempMove.setSortValue(3);
-					}
-					else if(reachableFigure.getY()<value.getX())
-					{
-						tempMove.setSortValue(1);
-					}
+						Move tempMove = new Move(value, reachableFigure, reachableFigure.getValue());
 
-					possibleMoves.add(tempMove);
+						tempMove.setSortValue(0);
+
+						if (!reachableFigure.getType().equals(""))
+						{
+							tempMove.setSortValue(3);
+						}
+						else if (reachableFigure.getY() < value.getX())
+						{
+							tempMove.setSortValue(1);
+						}
+
+						possibleMoves.add(tempMove);
+					}
 				}
 
 				figureList.resetReachable();
@@ -157,7 +163,8 @@ public class Bot extends Thread
 	{
 		if (i < roundsToCheck)
 		{
-			ArrayList<Move> possibleMoves = new ArrayList<>();
+			int index = 0;
+			Move[] possibleMoves = new Move[100];
 			int bestMove;
 
 			if (isWhiteNow)
@@ -169,98 +176,105 @@ public class Bot extends Thread
 				bestMove = Integer.MAX_VALUE;
 			}
 
-			for (Figure value : figureList)
+			for (Figure value : figureList.getArray())
 			{
 				value.setReachableFieldsForBot(figureList);
 
 				for (Figure reachableFigure : value.getCanReach())
 				{
-					Move tempMove = new Move(value, reachableFigure, reachableFigure.getValue());
-
-					tempMove.setSortValue(0);
-
-					if(!reachableFigure.getType().equals(""))
+					if(reachableFigure != null)
 					{
-						tempMove.setSortValue(3);
-					}
-					else if(reachableFigure.getY()<value.getX()&&!isWhiteNow)
-					{
-						tempMove.setSortValue(1);
-					}
-					else if(reachableFigure.getY()>value.getX())
-					{
-						tempMove.setSortValue(1);
-					}
+						Move tempMove = new Move(value, reachableFigure, reachableFigure.getValue());
 
-					possibleMoves.add(tempMove);
+						tempMove.setSortValue(0);
+
+						if (!reachableFigure.getType().equals(""))
+						{
+							tempMove.setSortValue(3);
+						}
+						else if (reachableFigure.getY() < value.getX() && !isWhiteNow)
+						{
+							tempMove.setSortValue(1);
+						}
+						else if (reachableFigure.getY() > value.getX())
+						{
+							tempMove.setSortValue(1);
+						}
+
+						possibleMoves[index ] = tempMove;
+						index ++;
+					}
 				}
 
 				figureList.resetReachable();
 			}
 
-			possibleMoves.sort((a,b)-> Integer.compare(a.getSortValue(),b.getSortValue())*direction);
+			//possibleMoves.sort((a,b)-> Integer.compare(a.getSortValue(),b.getSortValue())*direction);
 
 
 			for (Move move : possibleMoves)
 			{
-				FigureList temp = figureList.copyList();
-
-				temp.moveFigure(temp.getFigureAt(move.getSource()), temp.getFigureAt(move.getTarget()));
-
-				int tempMove;
-
-				if (move.getTarget().getType().equals("King"))
+				if(move != null)
 				{
-					if (move.getTarget().isWhite())
+					FigureList temp = figureList.copyList();
+
+					temp.moveFigure(temp.getFigureAt(move.getSource()), temp.getFigureAt(move.getTarget()));
+
+					int tempMove;
+
+					if (move.getTarget().getType().equals("King"))
 					{
-						tempMove = Integer.MIN_VALUE;
-						if (!isWhiteNow)
+						if (move.getTarget().isWhite())
 						{
-							return tempMove;
+							tempMove = Integer.MIN_VALUE;
+							if (!isWhiteNow)
+							{
+								return tempMove;
+							}
+						}
+						else
+						{
+							tempMove = Integer.MAX_VALUE;
+							if (isWhiteNow)
+							{
+								return tempMove;
+							}
 						}
 					}
 					else
 					{
-						tempMove = Integer.MAX_VALUE;
-						if (isWhiteNow)
-						{
-							return tempMove;
-						}
+						tempMove = checkMoves(temp, alpha, beta, !isWhiteNow, i + 1);
 					}
-				}
-				else
-				{
-					tempMove = checkMoves(temp, alpha, beta, !isWhiteNow, i + 1);
-				}
 
-				if (isWhiteNow)
-				{
-					if (bestMove < tempMove)
+					if (isWhiteNow)
 					{
-						bestMove = tempMove;
-						if (alpha < bestMove && !isInCheck)
+						if (bestMove < tempMove)
 						{
-							alpha = bestMove;
+							bestMove = tempMove;
+							if (alpha < bestMove && !isInCheck)
+							{
+								alpha = bestMove;
+							}
 						}
-					}
 
-				}
-				else
-				{
-					if (bestMove > tempMove)
+					}
+					else
 					{
-						bestMove = tempMove;
-						if (beta > bestMove && !isInCheck)
+						if (bestMove > tempMove)
 						{
-							beta = bestMove;
+							bestMove = tempMove;
+							if (beta > bestMove && !isInCheck)
+							{
+								beta = bestMove;
+							}
 						}
 					}
-				}
 
-				if (beta <= alpha)
-				{
-					System.out.println("-#-#-#-#-#   "+bestMove + "  " + isWhiteNow);
-					return bestMove;
+					if (beta <= alpha)
+					{
+						System.out.println("-#-#-#-#-#   " + bestMove + "  " + isWhiteNow);
+						return bestMove;
+					}
 				}
 			}
 
